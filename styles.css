@@ -1,0 +1,10 @@
+#logo {
+  width: 100px;
+}
+
+#banner {
+
+  /* Set a dark gray to blend with image to lighten the image */
+  background: #626262 url("./images/banner.jpg") no-repeat center;
+  background-blend-mode: screen;
+}
