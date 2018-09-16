@@ -1,11 +1,19 @@
+/* Table of contents
+
+   Globals
+
+   General Utils
+
+   Menu Handlers -- contain AJAX calls
+*/
 
 const BASE_URL = "https://script.google.com/macros/s/AKfycbyzJBFIC8PFykacFyF1koj1hYH_oGLYy1t-7sUrIy79Xv9AGAA/exec";
 
 // convenience references to elements
-let gElemContentHome = null;
-let gElemContentOpenAssignments = null;
-let gElemContentMyAssignments = null;
-let gElemContentMyStats = null;
+let gelemContentHome = null;
+let gelemContentOpenAssignments = null;
+let gelemContentMyAssignments = null;
+let gelemContentMyStats = null;
 
 // Array of open assignments
 let gaOpenAssignments = [];
@@ -26,52 +34,6 @@ function dateReviver(key, value) {
   return value;
 }
 
-/* ==================================================
-*  ajaxOpenAssignments
-*
-*  Load open assignments into gaOpenAssignments
-* =================================================== */
-// function ajaxOpenAssignments() {
-//
-//   // build ajax url
-//   let urlConversion = BASE_URL;
-//
-//   urlConversion += "?name=mike reagan";
-//   console.log(urlConversion);
-//
-//   // get a convenience copy of the span to place result or error msg
-//   const elemResult = document.getElementById("list-open-assignments");
-//
-//   // make AJAX call
-//   axios.get(urlConversion)
-//     .then((oResponse) => {
-//       console.log("-- response successful --");
-//       // console.log(`oResonse.data: ${oResponse.data}`);
-//       // console.log(`Data: ${JSON.stringify(oResponse.data)}`);
-//       // console.log("^^^^^^^^^^^^^^");
-//
-//       gaOpenAssignments = JSON.parse(oResponse.data, dateReviver);
-//
-//       elemResult.innerText = gaOpenAssignments.length;
-//
-//       // if (oResponse.data.success) {
-//       //   elemResult.innerText = oResponse.data;
-//       // } else {
-//       //   // display error mesg
-//       //   const sErrorMsg = JSON.stringify(oResponse);
-//       //   elemResult.innerText = sErrorMsg;
-//       // }
-//
-//     }) // then
-//     .catch((error) => {
-//       // display AJAX error msg
-//       console.log("-- error --");
-//       console.log(`${error}`);
-//       const sErrorMsg = JSON.stringify(error);
-//       elemResult.innerText = sErrorMsg;
-//     }); // catch
-//
-// }
 /* ==================================================
 *  changeMenuAndContentArea()
 *
@@ -105,7 +67,7 @@ function changeMenuAndContentArea(sMenuBtnID, elemContent) {
 *  Menu selection
 * =================================================== */
 function onMenuHome() {
-  changeMenuAndContentArea("nav--home", gElemContentHome);
+  changeMenuAndContentArea("nav--home", gelemContentHome);
 }
 
 /* ==================================================
@@ -134,10 +96,175 @@ function sortAssignments(oAssign1, oAssign2) {
 *
 *  Helper for onMenuOpenAssignments to create a CarePlanHeading element
 * =================================================== */
-function getCarePlanHeading(sCarePlan) {
-  const elemCarePlan = document.createElement('H3');
-  elemCarePlan.innerText = sCarePlan;
-  return elemCarePlan;
+// function getCarePlanHeading(sCarePlan) {
+//   const elemCarePlan = document.createElement('H3');
+//   elemCarePlan.innerText = sCarePlan;
+//   return elemCarePlan;
+// }
+
+function getRow(sTh, sTd) {
+  const elemRow = document.createElement("tr");
+  const elemColTh = document.createElement("th");
+  const elemColTd = document.createElement("td");
+
+  elemColTh.innerText = sTh;
+  elemColTd.innerHtml = sTd;
+
+  elemRow.appendChild(elemColTh);
+  elemRow.appendChild(elemColTd);
+
+  return elemRow;
+}
+
+/* ==================================================
+*  getElemOpenAssignmentDetails()
+*
+*  Helper to creat the DOM element for an assignment's details
+* =================================================== */
+function getElemOpenAssignmentDetails(oAssignment) {
+  const elemTable = document.createElement('table');
+  elemTable.appendChild(getRow("Location", `${oAssignment.Post_Location} - ${oAssignment.Home_or_Facility}`));
+  elemTable.appendChild(getRow("Request", `${oAssignment.Care_Plan}  ADD MORE`));
+  elemTable.appendChild(getRow("Stats", `${oAssignment.Age} yo ${oAssignment.Gender} with ${oAssignment.Diagnosis}`));
+  elemTable.appendChild(getRow("Background",`FIX THIS -- ${oAssignment.Psychosocial}`));
+
+  return elemTable;
+
+//   sOutput += "<p><table>";
+//   sOutput += "<tr><th>Location</th><td>"+  oAssignment.Post_Location+" - "+oAssignment.Home_or_Facility+"</td></tr>";
+//   sOutput += "<tr><th>Request</th><td>"+   oAssignment.Care_Plan+": &nbsp;"+addHtmlBr(redactNames(oAssignment.Request))+"</td></tr>";
+//   sOutput += "<tr><th>Stats</th><td>"+     oAssignment.Age+" yo "+oAssignment.Gender+" with "+oAssignment.Diagnosis+"</td></tr>";
+//   sOutput += "<tr><th>Background</th><td>"+addHtmlBr(redactNames(oAssignment.Psychosocial))+"</td></tr>";
+//   sOutput += "<tr>" +
+//                 "<th class=accept-head>Accept</th>"+
+//                 "<td class=accept-name>" +
+//                   "Your name: " +
+//                   "<input type=\"text\" id=\"sVolunteer"+assignmentIndex+"\">" +   // create unique field name, example: sVolunteer3
+//                   "&nbsp; <button type=\"button\" onclick=\"handleRequestAssignment("+assignmentIndex+")\">I Accept</button>" +
+//                 "</td></tr>";
+// sOutput += "</table><p>";
+
+}
+
+/* ==================================================
+*  function getElemOpenAssignment()
+*
+*  Builds ard returns the element for an assignment in the form:
+*
+*   <div class="card">
+*     <div class="card-header" data-toggle="collapse" data-target="#assignment-1">
+*       <h3><a href="#">heading for assignment...</a></h3>
+*     </div>
+*     <div id="assignment-1" class="collapse" data-parent="#care-plan-1">
+*       <div class="card-body">
+*         <table>
+*           details of assignment...
+*         </table>
+*       </div>
+*     </div>
+*   </div>
+*
+* @param idxCP (int) index of the current care plan, used to create ID
+* @param oAssignment (object) the assignment to add
+* @param idxAssignment (int)  index of the current care plan, used to create ID
+* =================================================== */
+function getElemOpenAssignment(idxCP, oAssignment, idxAssignment) {
+  // <div class="card">
+  const elemCard = document.createElement('div');
+  elemCard.classList.add("card");
+
+  // <div class="card-header" data-toggle="collapse" data-target="#assignment-1">
+  const elemCardHeader = document.createElement('div');
+  elemCardHeader.classList.add("card-header");
+  elemCardHeader.setAttribute("data-toggle", "collapse");
+  elemCardHeader.setAttribute("data-target", `#assignment-${idxAssignment}`);
+
+  // content of the card header
+  elemCardHeader.innerText = oAssignment.Patient_ID+" "+oAssignment.Care_Plan+" "+oAssignment.Patient_Name;
+
+  // <div id="assignment-1" class="collapse" data-parent="#care-plan-1">
+  const elemCardBodyContainer = document.createElement('div');
+  elemCardBodyContainer.id = `assignment-${idxAssignment}`;
+  elemCardBodyContainer.classList.add("collapse");
+  elemCardHeader.setAttribute("data-parent", `#care-plan-${idxCP}`);
+
+  // <div class="card-body">
+  const elemCardBody = document.createElement('div');
+  elemCardBody.classList.add("card-body");
+
+  // content of card body / assignment details
+  elemCardBody.appendChild(getElemOpenAssignmentDetails(oAssignment));
+  // elemCardBody.innerText = oAssignment.Post_Location;
+
+  // Add everything to DOM
+  elemCard.appendChild(elemCardHeader);
+  elemCard.appendChild(elemCardBodyContainer);
+  elemCardBodyContainer.appendChild(elemCardBody);
+
+  return elemCard;
+}
+
+/* ==================================================
+*  addOpenAssignments()
+*
+*  Loads passed container with open assignments with the format below.
+*  Care Plans are added as titles and a subfunction builds a BS collapsing
+*  list of cards to display the assignment details.
+*
+*   elemContainer (the passed param)
+*     elemCurrCP (Care Plan is a BS container for collapsing cards)
+*       card (BS card for an assignment in the Care Plan)
+*         header (BS card-header for assignment)
+*         details (BS collapsing element)
+*           details for an assignment
+*       card
+*         ....
+*     elemCurrCP
+*       ..
+*
+*   <div id="list-open-assignments">
+*     <div id="care-plan-1">
+*       <div class="card">
+*         <div class="card-header" data-toggle="collapse" data-target="#assignment-1">
+*         <div id="assignment-1" class="collapse" data-parent="#care-plan-1">
+*           <div class="card-body">
+*
+*  @param elemContainer (HTML Element) the element to add everything in to
+* =================================================== */
+function addOpenAssignments(elemContainer) {
+  let sCurrCP = "";
+  let elemCurrCP = null;
+  let idxCP = -1; // counter for CPs to use in setting elem ID's
+  let idxAssignment = 0; // counter for CPs to use in setting elem ID's below
+
+  // for each assignment
+  for (const oAssignment of gaOpenAssignments) {
+
+    // is assignment a new care plan?
+    if (oAssignment.Care_Plan !== sCurrCP) {
+      // If we've been building a CP, add to container.
+      if (elemCurrCP) {
+        elemContainer.appendChild(elemCurrCP);
+      }
+      // add the new care plan title to elemContainer
+      const elemHeading = document.createElement('H4');
+      elemHeading.classList.add("ml-4");
+      elemHeading.classList.add("mt-4");
+      elemHeading.innerText = oAssignment.Care_Plan;
+      elemContainer.appendChild(elemHeading);
+
+      // create new CP container for assignments
+      sCurrCP = oAssignment.Care_Plan;
+      elemCurrCP = document.createElement('div');
+      elemCurrCP.id = `care-plan-${++idxCP}`;
+    }
+
+    // add the assignment to the CP
+    elemCurrCP.appendChild(getElemOpenAssignment(idxCP, oAssignment, idxAssignment++));
+  }
+
+  // add final CP to DOM
+  elemContainer.appendChild(elemCurrCP);
 }
 
 /* ==================================================
@@ -146,20 +273,14 @@ function getCarePlanHeading(sCarePlan) {
 *  Menu selection
 * =================================================== */
 function onMenuOpenAssignments() {
-  changeMenuAndContentArea("nav--open-assignments", gElemContentOpenAssignments);
+  changeMenuAndContentArea("nav--open-assignments", gelemContentOpenAssignments);
 
-  // get a convenience copy of the span to place list of open assignments
-  const elemResult = document.getElementById("list-open-assignments");
-  elemResult.innerHTML = "";
+  // convenience copy of the span to place list of open assignments
+  const elemOpenAssignments = document.getElementById("list-open-assignments");
+  elemOpenAssignments.innerHTML = ""; // clear it from last rendering
 
   // show loading spinner
   document.querySelector("#content--open-assignments .spinner").removeAttribute("hidden");
-
-  // elemResult.innerHTML = "";
-  // const elemSpinner = document.createElement("img");
-  // elemSpinner.src = "./images/spinner-small.gif";
-  // elemSpinner.setAttribute("width", "100px");
-  // elemResult.appendChild(elemSpinner);
 
   // make AJAX call
   axios.get(BASE_URL)
@@ -173,30 +294,17 @@ function onMenuOpenAssignments() {
       gaOpenAssignments.sort(sortAssignments);
 
       // Load DOM with open assignments
-      let sCurrCarePlan = "";
-      for (const oAssignment of gaOpenAssignments) {
-        if (oAssignment.Care_Plan !== sCurrCarePlan) {
-          sCurrCarePlan = oAssignment.Care_Plan;
-          elemResult.appendChild(getCarePlanHeading(oAssignment.Care_Plan));
-        }
-      }
+      addOpenAssignments(elemOpenAssignments);
 
       // Hide loading spinner
       document.querySelector("#content--open-assignments .spinner").setAttribute("hidden", true);
-
-      // let s = "";
-      // for (const oAssignment of gaOpenAssignments) {
-      //   s += `${oAssignment.Patient_ID}<br>`;
-      // }
-      // elemResult.innerHTML = s;
-
     }) // then
     .catch((error) => {
       // display AJAX error msg
       console.log("-- error --");
       console.log(`${error}`);
       const sErrorMsg = JSON.stringify(error);
-      elemResult.innerText = sErrorMsg;
+      elemOpenAssignments.innerText = sErrorMsg;
     }); // catch
 }
 
@@ -206,7 +314,7 @@ function onMenuOpenAssignments() {
 *  Menu selecion
 * =================================================== */
 function onMenuMyAssignments() {
-  changeMenuAndContentArea("nav--my-assignments", gElemContentMyAssignments);
+  changeMenuAndContentArea("nav--my-assignments", gelemContentMyAssignments);
 }
 
 /* ==================================================
@@ -215,7 +323,7 @@ function onMenuMyAssignments() {
 *  Menu selection
 * =================================================== */
 function onMenuMyStats() {
-  changeMenuAndContentArea("nav--my-stats", gElemContentMyStats);
+  changeMenuAndContentArea("nav--my-stats", gelemContentMyStats);
 }
 
 /* ==================================================
@@ -224,15 +332,17 @@ function onMenuMyStats() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOM loaded");
 
-  gElemContentHome = document.getElementById("content--home");
-  gElemContentOpenAssignments = document.getElementById("content--open-assignments");
-  gElemContentMyAssignments = document.getElementById("content--my-assignments");
-  gElemContentMyStats = document.getElementById("content--my-stats");
+  gelemContentHome = document.getElementById("content--home");
+  gelemContentOpenAssignments = document.getElementById("content--open-assignments");
+  gelemContentMyAssignments = document.getElementById("content--my-assignments");
+  gelemContentMyStats = document.getElementById("content--my-stats");
 
   document.getElementById("nav--home").onclick = onMenuHome;
   document.getElementById("nav--open-assignments").onclick = onMenuOpenAssignments;
   document.getElementById("nav--my-assignments").onclick = onMenuMyAssignments;
   document.getElementById("nav--my-stats").onclick = onMenuMyStats;
 
-  onMenuHome();
+  // onMenuHome();
+  onMenuOpenAssignments();
+  // onMenuMyStats();
 });

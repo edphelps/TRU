@@ -22,7 +22,7 @@
       <!-- ROW -->
       <div class="row p-3 d-flex align-items-end">
 
-        <!-- COL:  login name / password -->
+        <!-- COLUMN  login name / password -->
         <div class="col">
           <form class="">
             <fieldset>
@@ -39,7 +39,7 @@
           </form>
         </div> <!-- col -->
 
-        <!-- COL: logo -->
+        <!-- COLUMN logo -->
         <div class="col">
           <img class="float-right" id="logo" src="./images/tru-logo.png" alt="TRU logo">
         </div> <!-- col -->
@@ -55,16 +55,16 @@
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
       <!-- hamburger menu setup magic -->
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a id="nav--home" class="nav-item nav-link active" href="#">Home </a>
+          <a id="nav--home" class="nav-item nav-link " href="#">Home </a>
           <a id="nav--open-assignments" class="nav-item nav-link" href="#">Open assignments </a>
           <a id="nav--my-assignments" class="nav-item nav-link" href="#">My assignments </a>
-          <a id="nav--my-stats" class="nav-item nav-link" href="#">My stats</a>
+          <a id="nav--my-stats" class="nav-item nav-link active" href="#">My stats</a>
         </div>
       </div>
     </nav>
@@ -84,18 +84,30 @@
     <!-- ============================================= -->
     <!-- CONTENT - Open Assignments -->
     <!-- ============================================= -->
+
     <div id="content--open-assignments" class="content" hidden>
-      <H1>Open Assignments</H1>
+
+        <!-- Spinner's hidden flag controlled by js -->
       <div class="d-flex justify-content-center">
         <img class="spinner" src="./images/spinner.gif" alt="">
       </div>
+
+      <!-- ajax data loads here -->
       <div id="list-open-assignments">
+        onMenuOpenAssignments() loads this section via ajax...
       </div>
+
+      <!-- Give some space for final card to expand w/o falling off bottom of screen -->
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
     </div>
 
     <!-- ============================================= -->
     <!-- CONTENT - My Assignments -->
     <!-- ============================================= -->
+    
     <div id="content--my-assignments" class="content" hidden>
       <H1>My Assignments!</H1>
       </div>
@@ -106,32 +118,37 @@
     <div id="content--my-stats" class="content" hidden>
       <H1>My Stats!</H1>
 
-      <div id="accordion">
+      <div id="cp-1">
 
+        <!-- CARD -->
         <div class="card">
-          <div class="card-header" id="headingOne">
-            <h5 class="mb-0">
-              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                Collapsible Group Item #1
-              </button>
-            </h5>
+          <div class="card-header" data-toggle="collapse" data-target="#assgn-1">
+            <h3><a href="#">test</a></h3>
           </div>
-          <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+
+          <div id="assgn-1" class="collapse" data-parent="#cp-1">
             <div class="card-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+              <table>
+                <tr>
+                  <th>Entry</th>
+                  <th>Entry</th>
+                </tr>
+                <tr>
+                  <th>Entry</th>
+                  <th>Entry</th>
+                </tr>
+              </table>
             </div>
           </div>
         </div>
 
+        <!-- CARD -->
         <div class="card">
           <div class="card-header" id="headingTwo">
-            <h5 class="mb-0">
-              <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                Collapsible Group Item #2
-              </button>
-            </h5>
+            <h3 data-toggle="collapse" data-target="#collapse-2"><a href="#">Another option</a></h3>
           </div>
-          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+
+          <div id="collapse-2" class="collapse" data-parent="#cp-1">
             <div class="card-body">
               Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
             </div>
@@ -146,14 +163,14 @@
               </button>
             </h5>
           </div>
-          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#cp-1">
             <div class="card-body">
               Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
             </div>
           </div>
         </div>
 
-      </div> <!-- accordion -->
+      </div> <!-- care-plan-1 -->
 
 
 

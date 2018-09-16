@@ -34,6 +34,18 @@ fieldset {
   /* #A2D9CE; */
   /* lightgray; */
 }
+.card-header {
+  height: 50px;
+  background-color: lightgreen;
+}
+
+.collapsed {
+  background-color: lightblue;
+}
+
+.card-body {
+  background-color: #FDF2E9;
+}
 
 .content {
   background-color: lavender;
