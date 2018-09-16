@@ -14,18 +14,32 @@
 <body>
   <div class="container">
 
+    <!-- ============================================= -->
     <!-- BANNER -->
+    <!-- ============================================= -->
     <div id="banner" class="">
 
+      <!-- ROW -->
       <div class="row p-3 d-flex align-items-end">
 
-        <div class="col-9">
+        <!-- COL:  login name / password -->
+        <div class="col">
           <form class="">
-            <label class="" for="name">Your name</label>
-            <input class="" type="text" name="name">
+            <fieldset>
+              <div class="text-right">
+                <label class="" for="name">name</label>
+                <input class="" type="text" name="name" placeholder="your name" required autofocus><br>
+                <label class="" for="name">password</label>
+                <input class="" type="text" name="password" placeholder="password" required>
+                <!-- Must have a submit button (even though it's hidden)
+                     to allow user to hit enter -->
+                <button type="submit" name="button" hidden>login</button>
+            </div>
+            </fieldset>
           </form>
         </div> <!-- col -->
 
+        <!-- COL: logo -->
         <div class="col">
           <img class="float-right" id="logo" src="./images/tru-logo.png" alt="TRU logo">
         </div> <!-- col -->
@@ -34,42 +48,84 @@
 
     </div> <!-- banner -->
 
-    <h1>V2</h1>
-    <button id="go" type="button"> Go </button>
-    <div>
-      result: <span id="result"></span>
+
+    <!-- ============================================= -->
+    <!-- NAVIGATION -->
+    <!-- ============================================= -->
+
+    <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+      <!-- hamburger menu setup magic -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a id="nav--home" class="nav-item nav-link active" href="#">Home </a>
+          <a id="nav--open-assignments" class="nav-item nav-link " href="#">Open assignments </a>
+          <a id="nav--my-assignments" class="nav-item nav-link" href="#">My assignments </a>
+          <a id="nav--my-stats" class="nav-item nav-link" href="#">My stats</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============================================= -->
+    <!-- CONTENT - Home Page -->
+    <!-- ============================================= -->
+    <div id="content--home" hidden>
+      <div class="content">
+        <H1>Welcome home!</H1>
+        <p>Contact information:</p>
+        <ul>
+          <li>Reagan</li>
+          <li>Wendy</li>
+        </ul>
+      </div>
     </div>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
-    <p>---</p>
+
+    <!-- ============================================= -->
+    <!-- CONTENT - Open Assignments -->
+    <!-- ============================================= -->
+    <div id="content--open-assignments" hidden>
+      <div class="content">
+        <H1>Open Assignments!</H1>
+      </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- CONTENT - My Assignments -->
+    <!-- ============================================= -->
+    <div id="content--my-assignments" hidden>
+      <div class="content">
+        <H1>My Assignments!</H1>
+      </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- CONTENT - My Stats -->
+    <!-- ============================================= -->
+    <div id="content--my-stats" hidden>
+      <div class="content">
+        <H1>My Stats!</H1>
+      </div>
+    </div>
+
+
   </div> <!-- container -->
 
-    <!-- Axios CDN -->
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <!-- My script -->
-    <script src="./app.js" charset="utf-8"></script>
+
+  <!-- ============================================= -->
+  <!-- SCRIPT FILE LOADS -->
+  <!-- ============================================= -->
+
+  <!-- bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+  <!-- Axios CDN -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- My script -->
+  <script src="./app.js" charset="utf-8"></script>
 </body>
 
 </html>

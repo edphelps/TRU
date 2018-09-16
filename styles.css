@@ -2,9 +2,39 @@
   width: 100px;
 }
 
-#banner {
+input {
+  border-radius: 5px;
+  width: 180px;
+  padding-left: 4px;
+  margin-left: 2px;
+}
+::placeholder {
+    color: grey;
+    opacity: 0.5;
+}
 
-  /* Set a dark gray to blend with image to lighten the image */
+fieldset {
+  padding: 10px 10px 5px 10px;
+  margin-bottom: 3px;
+  width: 290px;
+
+  border: solid 2px darkgray;
+  border-radius: 10px;
+  box-shadow: 0 0 20px 3px black;
+
+  background: lightgray;
+}
+
+.content {
+  background-color: lightgreen;
+}
+
+#banner {
+  /* Set a dark gray background color to blend with image to lighten the image */
   background: #626262 url("./images/banner.jpg") no-repeat center;
   background-blend-mode: screen;
+
+
+  /* background-image: url("./images/banner.jpg") */
+  /* background: url("./images/banner.jpg") no-repeat center; */
 }

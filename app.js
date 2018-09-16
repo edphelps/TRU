@@ -1,6 +1,12 @@
 
 const BASE_URL = "https://script.google.com/macros/s/AKfycbyzJBFIC8PFykacFyF1koj1hYH_oGLYy1t-7sUrIy79Xv9AGAA/exec";
 
+// convenience references to elements
+let gElemContentHome = null;
+let gElemContentOpenAssignments = null;
+let gElemContentMyAssignments = null;
+let gElemContentMyStats = null;
+
 // Array of open assignments
 let gaOpenAssignments = [];
 
@@ -21,9 +27,11 @@ function dateReviver(key, value) {
 }
 
 /* ==================================================
-* Go
+*  ajaxOpenAssignments
+*
+*  Load open assignments into gaOpenAssignments 
 * =================================================== */
-function actionGo() {
+function ajaxOpenAssignments() {
 
   // build ajax url
   let urlConversion = BASE_URL;
@@ -66,9 +74,72 @@ function actionGo() {
 }
 
 /* ==================================================
+*  hideAllContent()
+*
+*  Hide all of the content blocks associated with the menu choices
+* =================================================== */
+function hideAllContent() {
+  gElemContentHome.setAttribute("hidden",true);
+  gElemContentOpenAssignments.setAttribute("hidden",true);
+  gElemContentMyAssignments.setAttribute("hidden",true);
+  gElemContentMyStats.setAttribute("hidden",true);
+}
+
+/* ==================================================
+*  onMenuHome()
+*
+*  Menu selection
+* =================================================== */
+function onMenuHome() {
+  hideAllContent();
+  gElemContentHome.removeAttribute("hidden");
+}
+
+/* ==================================================
+*  onMenuOpenAssignments()
+*
+*  Menu selection
+* =================================================== */
+function onMenuOpenAssignments() {
+  hideAllContent();
+  gElemContentOpenAssignments.removeAttribute("hidden");
+}
+
+/* ==================================================
+*  onMenuMyAssignments()
+*
+*  Menu selecion
+* =================================================== */
+function onMenuMyAssignments() {
+  hideAllContent();
+  gElemContentMyAssignments.removeAttribute("hidden");
+}
+
+/* ==================================================
+*  onMenuMyStats()
+*
+*  Menu selection
+* =================================================== */
+function onMenuMyStats() {
+  hideAllContent();
+  gElemContentMyStats.removeAttribute("hidden");
+}
+
+/* ==================================================
 *  DOM loaded, setup and set button event listener
 * =================================================== */
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOM loaded");
-  document.getElementById("go").onclick = actionGo;
+
+  gElemContentHome = document.getElementById("content--home");
+  gElemContentOpenAssignments = document.getElementById("content--open-assignments");
+  gElemContentMyAssignments = document.getElementById("content--my-assignments");
+  gElemContentMyStats = document.getElementById("content--my-stats");
+
+  document.getElementById("nav--home").onclick = onMenuHome;
+  document.getElementById("nav--open-assignments").onclick = onMenuOpenAssignments;
+  document.getElementById("nav--my-assignments").onclick = onMenuMyAssignments;
+  document.getElementById("nav--my-stats").onclick = onMenuMyStats;
+
+  onMenuHome();
 });
