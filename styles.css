@@ -13,20 +13,31 @@ input {
     opacity: 0.5;
 }
 
+.spinner {
+  width: 100px;
+  height: 100px;
+  text-align: center;
+}
+
 fieldset {
   padding: 10px 10px 5px 10px;
   margin-bottom: 3px;
   width: 290px;
 
-  border: solid 2px darkgray;
+  border: solid 2px black;
   border-radius: 10px;
   box-shadow: 0 0 20px 3px black;
 
-  background: lightgray;
+  color: white;
+  background: #138D75;
+  font-weight: lighter;
+  /* #A2D9CE; */
+  /* lightgray; */
 }
 
 .content {
-  background-color: lightgreen;
+  background-color: lavender;
+  padding: 15px;
 }
 
 #banner {

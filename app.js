@@ -29,38 +29,166 @@ function dateReviver(key, value) {
 /* ==================================================
 *  ajaxOpenAssignments
 *
-*  Load open assignments into gaOpenAssignments 
+*  Load open assignments into gaOpenAssignments
 * =================================================== */
-function ajaxOpenAssignments() {
+// function ajaxOpenAssignments() {
+//
+//   // build ajax url
+//   let urlConversion = BASE_URL;
+//
+//   urlConversion += "?name=mike reagan";
+//   console.log(urlConversion);
+//
+//   // get a convenience copy of the span to place result or error msg
+//   const elemResult = document.getElementById("list-open-assignments");
+//
+//   // make AJAX call
+//   axios.get(urlConversion)
+//     .then((oResponse) => {
+//       console.log("-- response successful --");
+//       // console.log(`oResonse.data: ${oResponse.data}`);
+//       // console.log(`Data: ${JSON.stringify(oResponse.data)}`);
+//       // console.log("^^^^^^^^^^^^^^");
+//
+//       gaOpenAssignments = JSON.parse(oResponse.data, dateReviver);
+//
+//       elemResult.innerText = gaOpenAssignments.length;
+//
+//       // if (oResponse.data.success) {
+//       //   elemResult.innerText = oResponse.data;
+//       // } else {
+//       //   // display error mesg
+//       //   const sErrorMsg = JSON.stringify(oResponse);
+//       //   elemResult.innerText = sErrorMsg;
+//       // }
+//
+//     }) // then
+//     .catch((error) => {
+//       // display AJAX error msg
+//       console.log("-- error --");
+//       console.log(`${error}`);
+//       const sErrorMsg = JSON.stringify(error);
+//       elemResult.innerText = sErrorMsg;
+//     }); // catch
+//
+// }
+/* ==================================================
+*  changeMenuAndContentArea()
+*
+*  Menu choice onClick event handers call this function to
+*  set the correct menu choice active and display the
+*  correct content area.  The onClick handler must still
+*  dynamically fill the content area.
+* =================================================== */
+function changeMenuAndContentArea(sMenuBtnID, elemContent) {
 
-  // build ajax url
-  let urlConversion = BASE_URL;
+  // hide all content sections
+  const aElemContent = document.querySelectorAll(".content");
+  for (const elem of aElemContent) {
+    elem.setAttribute("hidden", true);
+  }
 
-  urlConversion += "?name=mike reagan";
-  console.log(urlConversion);
+  // set all menu buttons inactive
+  const aElemNavLink = document.querySelectorAll(".nav-link");
+  for (const elemNavLink of aElemNavLink) {
+    elemNavLink.classList.remove("active");
+  }
 
-  // get a convenience copy of the span to place result or error msg
-  const elemResult = document.getElementById("result");
+  // set current menu choice active and show associated content area
+  document.getElementById(sMenuBtnID).classList.add("active");
+  elemContent.removeAttribute("hidden");
+}
+
+/* ==================================================
+*  onMenuHome()
+*
+*  Menu selection
+* =================================================== */
+function onMenuHome() {
+  changeMenuAndContentArea("nav--home", gElemContentHome);
+}
+
+/* ==================================================
+*  sortAssignments()
+*
+*  Helper for onMenuOpenAssignments() to sort assignments for display
+* =================================================== */
+function sortAssignments(oAssign1, oAssign2) {
+  // sort by Care_Plan
+  if (oAssign1.Care_Plan < oAssign2.Care_Plan)
+    return -1;
+  if (oAssign2.Care_Plan < oAssign1.Care_Plan)
+    return 1;
+  // Care_Plans are === so sort z-a by timestamp
+  if (oAssign1.Timestamp < oAssign2.Timestamp)
+    return -1;
+  if (oAssign2.Timestamp < oAssign1.Timestamp)
+    return 1;
+  // timestamps could be the same if they were manually set to
+  // a date to change the listing order
+  return 0;
+}
+
+/* ==================================================
+*  getCarePlanHeading()
+*
+*  Helper for onMenuOpenAssignments to create a CarePlanHeading element
+* =================================================== */
+function getCarePlanHeading(sCarePlan) {
+  const elemCarePlan = document.createElement('H3');
+  elemCarePlan.innerText = sCarePlan;
+  return elemCarePlan;
+}
+
+/* ==================================================
+*  onMenuOpenAssignments()
+*
+*  Menu selection
+* =================================================== */
+function onMenuOpenAssignments() {
+  changeMenuAndContentArea("nav--open-assignments", gElemContentOpenAssignments);
+
+  // get a convenience copy of the span to place list of open assignments
+  const elemResult = document.getElementById("list-open-assignments");
+  elemResult.innerHTML = "";
+
+  // show loading spinner
+  document.querySelector("#content--open-assignments .spinner").removeAttribute("hidden");
+
+  // elemResult.innerHTML = "";
+  // const elemSpinner = document.createElement("img");
+  // elemSpinner.src = "./images/spinner-small.gif";
+  // elemSpinner.setAttribute("width", "100px");
+  // elemResult.appendChild(elemSpinner);
 
   // make AJAX call
-  axios.get(urlConversion)
+  axios.get(BASE_URL)
     .then((oResponse) => {
       console.log("-- response successful --");
-      // console.log(`oResonse.data: ${oResponse.data}`);
-      // console.log(`Data: ${JSON.stringify(oResponse.data)}`);
-      // console.log("^^^^^^^^^^^^^^");
 
+      // Parse the returned JSON into an array of assignments
       gaOpenAssignments = JSON.parse(oResponse.data, dateReviver);
 
-      elemResult.innerText = gaOpenAssignments.length;
+      // Sort assignments for display
+      gaOpenAssignments.sort(sortAssignments);
 
-      // if (oResponse.data.success) {
-      //   elemResult.innerText = oResponse.data;
-      // } else {
-      //   // display error mesg
-      //   const sErrorMsg = JSON.stringify(oResponse);
-      //   elemResult.innerText = sErrorMsg;
+      // Load DOM with open assignments
+      let sCurrCarePlan = "";
+      for (const oAssignment of gaOpenAssignments) {
+        if (oAssignment.Care_Plan !== sCurrCarePlan) {
+          sCurrCarePlan = oAssignment.Care_Plan;
+          elemResult.appendChild(getCarePlanHeading(oAssignment.Care_Plan));
+        }
+      }
+
+      // Hide loading spinner
+      document.querySelector("#content--open-assignments .spinner").setAttribute("hidden", true);
+
+      // let s = "";
+      // for (const oAssignment of gaOpenAssignments) {
+      //   s += `${oAssignment.Patient_ID}<br>`;
       // }
+      // elemResult.innerHTML = s;
 
     }) // then
     .catch((error) => {
@@ -70,39 +198,6 @@ function ajaxOpenAssignments() {
       const sErrorMsg = JSON.stringify(error);
       elemResult.innerText = sErrorMsg;
     }); // catch
-
-}
-
-/* ==================================================
-*  hideAllContent()
-*
-*  Hide all of the content blocks associated with the menu choices
-* =================================================== */
-function hideAllContent() {
-  gElemContentHome.setAttribute("hidden",true);
-  gElemContentOpenAssignments.setAttribute("hidden",true);
-  gElemContentMyAssignments.setAttribute("hidden",true);
-  gElemContentMyStats.setAttribute("hidden",true);
-}
-
-/* ==================================================
-*  onMenuHome()
-*
-*  Menu selection
-* =================================================== */
-function onMenuHome() {
-  hideAllContent();
-  gElemContentHome.removeAttribute("hidden");
-}
-
-/* ==================================================
-*  onMenuOpenAssignments()
-*
-*  Menu selection
-* =================================================== */
-function onMenuOpenAssignments() {
-  hideAllContent();
-  gElemContentOpenAssignments.removeAttribute("hidden");
 }
 
 /* ==================================================
@@ -111,8 +206,7 @@ function onMenuOpenAssignments() {
 *  Menu selecion
 * =================================================== */
 function onMenuMyAssignments() {
-  hideAllContent();
-  gElemContentMyAssignments.removeAttribute("hidden");
+  changeMenuAndContentArea("nav--my-assignments", gElemContentMyAssignments);
 }
 
 /* ==================================================
@@ -121,8 +215,7 @@ function onMenuMyAssignments() {
 *  Menu selection
 * =================================================== */
 function onMenuMyStats() {
-  hideAllContent();
-  gElemContentMyStats.removeAttribute("hidden");
+  changeMenuAndContentArea("nav--my-stats", gElemContentMyStats);
 }
 
 /* ==================================================
