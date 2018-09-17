@@ -85,38 +85,11 @@
       <H1>Welcome!</H1>
       <p>Contact information:</p>
       <ul>
-        <li>Triage</li>
-        <li>Reagan</li>
-        <li>Wendy</li>
+        <li>Triage: 303-123-4567</li>
+        <li>Reagan: 303-123-4567</li>
+        <li>Wendy: 303-123-4567</li>
+        <li>Ginger: 303-123-4567</li>
       </ul>
-
-      <!-- Button trigger modal -->
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-        Launch demo modal
-      </button>
-
-      <!-- Modal -->
-      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              ...
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
     </div>
 
     <!-- ============================================= -->
@@ -125,9 +98,9 @@
 
     <div id="content--open-assignments" class="content" hidden>
 
-        <!-- Spinner's hidden flag controlled by js -->
+      <!-- Spinner's hidden flag controlled by js -->
       <div class="d-flex justify-content-center">
-        <img class="spinner" src="./images/spinner.gif" alt="">
+        <img class="spinner mt-4 mb-2" src="./images/spinner.gif" alt="">
       </div>
 
       <!-- ajax data loads here -->
@@ -137,8 +110,30 @@
 
       <!-- Give some space for final card to expand w/o falling off bottom of screen -->
       <p>&nbsp;</p>
-      <p>&nbsp;</p>
-    </div>
+
+      <!-- Modal Dialog to display on failed -->
+      <div class="modal fade" id="modal-take-assigment-failed" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Assignment Unavailable</h5>
+              <button type="button" class="close" data-dismiss="modal">
+                <span>&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>We're sorry, this assignment is no longer available. You may wish to choose
+              "Open assignments" from the menu to get a fresh list of available assignments.</p>
+              <p>Details: <span id="assignment-failed-error-message">specific error message here....<span></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- modal -->
+
+    </div> <!-- content open-assignments -->
 
     <!-- ============================================= -->
     <!-- CONTENT - My Assignments -->

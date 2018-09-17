@@ -48,6 +48,9 @@ fieldset {
 
   color: white;
   font-weight: lighter;
+  
+  /* set background in case app gets stuck before setting valid or invalid classes */
+  background: lightgray;
 }
 
 .login--valid {
