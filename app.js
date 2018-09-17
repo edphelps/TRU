@@ -7,6 +7,12 @@
    Menu Handlers -- contain AJAX calls
 */
 
+/* *****************************************************************************
+********************************************************************************
+*  Globals
+********************************************************************************
+***************************************************************************** */
+
 const BASE_URL = "https://script.google.com/macros/s/AKfycbyzJBFIC8PFykacFyF1koj1hYH_oGLYy1t-7sUrIy79Xv9AGAA/exec";
 
 // convenience references to elements
@@ -17,6 +23,13 @@ let gelemContentMyStats = null;
 
 // Array of open assignments
 let gaOpenAssignments = [];
+
+
+/* *****************************************************************************
+********************************************************************************
+*  General Utils
+********************************************************************************
+***************************************************************************** */
 
 /* =========================================================
 *  dateReviver()
@@ -32,42 +45,6 @@ function dateReviver(key, value) {
     }
   }
   return value;
-}
-
-/* ==================================================
-*  changeMenuAndContentArea()
-*
-*  Menu choice onClick event handers call this function to
-*  set the correct menu choice active and display the
-*  correct content area.  The onClick handler must still
-*  dynamically fill the content area.
-* =================================================== */
-function changeMenuAndContentArea(sMenuBtnID, elemContent) {
-
-  // hide all content sections
-  const aElemContent = document.querySelectorAll(".content");
-  for (const elem of aElemContent) {
-    elem.setAttribute("hidden", true);
-  }
-
-  // set all menu buttons inactive
-  const aElemNavLink = document.querySelectorAll(".nav-link");
-  for (const elemNavLink of aElemNavLink) {
-    elemNavLink.classList.remove("active");
-  }
-
-  // set current menu choice active and show associated content area
-  document.getElementById(sMenuBtnID).classList.add("active");
-  elemContent.removeAttribute("hidden");
-}
-
-/* ==================================================
-*  onMenuHome()
-*
-*  Menu selection
-* =================================================== */
-function onMenuHome() {
-  changeMenuAndContentArea("nav--home", gelemContentHome);
 }
 
 /* ==================================================
@@ -92,6 +69,61 @@ function sortAssignments(oAssign1, oAssign2) {
 }
 
 /* ==================================================
+*  getDateOnly
+*
+*  Get date-only string from date or "?" for bad dates.
+*
+*  @param dt (Date | anything) - Date to be turned into string, or anything else
+*                                which will return "?"
+*  @param bMonthDayOnly (optional bool) - T to only return Month/Day
+*
+*  @return (string) String in the format "01/05/2019", "01/05", or "?" if param
+*                   wasn't passed a valid date
+* =================================================== */
+function getDateOnly(_dt, bMonthDayOnly) {
+  const dt = new Date(_dt); // this allows the dt param to be Date or String
+  if (Number.isNaN(dt))
+    return "?";
+  return `${(dt.getMonth() < 9 ? "0" : "") + (dt.getMonth() + 1)}/${dt.getDate() < 10 ? "0" : ""}${dt.getDate()}${!bMonthDayOnly ? "/" + dt.getFullYear() : ""}`;
+  // return (dt.getMonth() < 9 ? "0" : "") +(dt.getMonth() + 1) + "/" + (dt.getDate() < 10 ? "0" : "") +
+  //    dt.getDate() + (!bMonthDayOnly ? "/" + dt.getFullYear() : "");
+
+}
+
+/* ==================================================
+*  redactNames()
+*
+*  Redact names in a string.  Names are flagged with "~"
+*   ex: "His name is ~Steve" -> "His name is ----"
+*
+*  @param sText (string) string that includes ~'s to make words to redact
+*  @return new string that's been redacted
+* =================================================== */
+function redactNames(sText) {
+  return sText.replace(new RegExp(/(~\w+)/gi), "#name#"); // replace "~" and following word with "----"
+}
+
+/* ==================================================
+*  addHtmlBr()
+*
+*  Replace newlines with <br> so they display correctly in HTML
+*
+*  @param sText (string) string that includes \n newlines
+*  @return new string that's replaced \n with <br>
+* =================================================== */
+function addHtmlBr(sText) {
+  return sText.replace(/\n/g, '<br>');
+  // return sText.replace("\n", '<br><br>');  // ERROR, only replacing the first one
+}
+
+
+/* *****************************************************************************
+********************************************************************************
+*  MENU HANDLERS
+********************************************************************************
+***************************************************************************** */
+
+/* ==================================================
 *  getCarePlanHeading()
 *
 *  Helper for onMenuOpenAssignments to create a CarePlanHeading element
@@ -102,13 +134,13 @@ function sortAssignments(oAssign1, oAssign2) {
 //   return elemCarePlan;
 // }
 
-function getRow(sTh, sTd) {
+function makeRow(sTh, sTd) {
   const elemRow = document.createElement("tr");
   const elemColTh = document.createElement("th");
   const elemColTd = document.createElement("td");
 
   elemColTh.innerText = sTh;
-  elemColTd.innerHtml = sTd;
+  elemColTd.innerHTML = sTd; // need this for elements that use addHtmlBr()
 
   elemRow.appendChild(elemColTh);
   elemRow.appendChild(elemColTd);
@@ -119,29 +151,28 @@ function getRow(sTh, sTd) {
 /* ==================================================
 *  getElemOpenAssignmentDetails()
 *
-*  Helper to creat the DOM element for an assignment's details
+*  Helper to create the DOM element for an assignment's details
 * =================================================== */
 function getElemOpenAssignmentDetails(oAssignment) {
   const elemTable = document.createElement('table');
-  elemTable.appendChild(getRow("Location", `${oAssignment.Post_Location} - ${oAssignment.Home_or_Facility}`));
-  elemTable.appendChild(getRow("Request", `${oAssignment.Care_Plan}  ADD MORE`));
-  elemTable.appendChild(getRow("Stats", `${oAssignment.Age} yo ${oAssignment.Gender} with ${oAssignment.Diagnosis}`));
-  elemTable.appendChild(getRow("Background",`FIX THIS -- ${oAssignment.Psychosocial}`));
+
+  // elemTable.classList.add("border");
+  // elemTable.classList.add("rounded");
+
+  elemTable.appendChild(makeRow("Location", `${oAssignment.Post_Location} - ${oAssignment.Home_or_Facility}`));
+  elemTable.appendChild(makeRow("Request", `${oAssignment.Care_Plan} -- ${addHtmlBr(redactNames(oAssignment.Request))}`));
+  elemTable.appendChild(makeRow("Stats", `${oAssignment.Age}yo ${oAssignment.Gender} with ${oAssignment.Diagnosis}`));
+  elemTable.appendChild(makeRow("Background", `${addHtmlBr(redactNames(oAssignment.Psychosocial))}`));
 
   return elemTable;
 
-//   sOutput += "<p><table>";
-//   sOutput += "<tr><th>Location</th><td>"+  oAssignment.Post_Location+" - "+oAssignment.Home_or_Facility+"</td></tr>";
-//   sOutput += "<tr><th>Request</th><td>"+   oAssignment.Care_Plan+": &nbsp;"+addHtmlBr(redactNames(oAssignment.Request))+"</td></tr>";
-//   sOutput += "<tr><th>Stats</th><td>"+     oAssignment.Age+" yo "+oAssignment.Gender+" with "+oAssignment.Diagnosis+"</td></tr>";
-//   sOutput += "<tr><th>Background</th><td>"+addHtmlBr(redactNames(oAssignment.Psychosocial))+"</td></tr>";
 //   sOutput += "<tr>" +
-//                 "<th class=accept-head>Accept</th>"+
-//                 "<td class=accept-name>" +
-//                   "Your name: " +
-//                   "<input type=\"text\" id=\"sVolunteer"+assignmentIndex+"\">" +   // create unique field name, example: sVolunteer3
-//                   "&nbsp; <button type=\"button\" onclick=\"handleRequestAssignment("+assignmentIndex+")\">I Accept</button>" +
-//                 "</td></tr>";
+        // "<th class=accept-head>Accept</th>"+
+        // "<td class=accept-name>" +
+        //   "Your name: " +
+        //   "<input type=\"text\" id=\"sVolunteer"+assignmentIndex+"\">" +   // create unique field name, example: sVolunteer3
+        //   "&nbsp; <button type=\"button\" onclick=\"handleRequestAssignment("+assignmentIndex+")\">I Accept</button>" +
+        // "</td></tr>";
 // sOutput += "</table><p>";
 
 }
@@ -176,11 +207,53 @@ function getElemOpenAssignment(idxCP, oAssignment, idxAssignment) {
   // <div class="card-header" data-toggle="collapse" data-target="#assignment-1">
   const elemCardHeader = document.createElement('div');
   elemCardHeader.classList.add("card-header");
+  elemCardHeader.classList.add("collapsed"); // required to get CSS coloring to work
+  elemCardHeader.classList.add("text-center");
   elemCardHeader.setAttribute("data-toggle", "collapse");
   elemCardHeader.setAttribute("data-target", `#assignment-${idxAssignment}`);
 
-  // content of the card header
-  elemCardHeader.innerText = oAssignment.Patient_ID+" "+oAssignment.Care_Plan+" "+oAssignment.Patient_Name;
+  // CARD HEADER
+  elemCardHeader.innerHTML = `${oAssignment.Post_Location}, ${oAssignment.Home_or_Facility} &nbsp;&nbsp;`;
+  // days ago
+  const elemSpan = document.createElement('span');
+  elemSpan.classList.add("text-muted");
+  elemSpan.classList.add("small");
+  const iDaysAgo = Math.floor((new Date() - oAssignment.Timestamp) / 1000 / 60 / 60 / 24);
+  // if (iDaysAgo <= 0)
+  //   elemSpan.innerHTML = '(today) &nbsp;&nbsp;&nbsp;'
+  // else if (iDaysAgo === 1)
+  //   elemSpan.innerHTML = '(yesterday) &nbsp;&nbsp;&nbsp;'
+  // else
+  //   elemSpan.innerHTML = `(${iDaysAgo} days) &nbsp;&nbsp;&nbsp;`
+  // // elemSpan.innerHTML = ` (${getDateOnly(oAssignment.Timestamp, true)}) &nbsp;&nbsp;&nbsp;`;
+  // elemCardHeader.appendChild(elemSpan);
+  // orange pill
+  if (7 < iDaysAgo && iDaysAgo <= 14) {
+    const elemBadge = document.createElement("span");
+    elemBadge.innerText = "> 1wk";
+    elemBadge.classList.add("badge");
+    elemBadge.classList.add("badge-pill");
+    elemBadge.classList.add("badge-warning");
+    elemCardHeader.appendChild(elemBadge);
+  }
+  // red pill
+  if (14 < iDaysAgo) {
+    const elemBadge = document.createElement("span");
+    elemBadge.innerText = "> 2wks";
+    elemBadge.classList.add("badge");
+    elemBadge.classList.add("badge-pill");
+    elemBadge.classList.add("badge-danger");
+    elemCardHeader.appendChild(elemBadge);
+  }
+  // new pill
+  if (false) {
+    const elemBadge = document.createElement("span");
+    elemBadge.innerText = "New";
+    elemBadge.classList.add("badge");
+    elemBadge.classList.add("badge-pill");
+    elemBadge.classList.add("badge-primary");
+    elemCardHeader.appendChild(elemBadge);
+  }
 
   // <div id="assignment-1" class="collapse" data-parent="#care-plan-1">
   const elemCardBodyContainer = document.createElement('div');
@@ -248,8 +321,10 @@ function addOpenAssignments(elemContainer) {
       }
       // add the new care plan title to elemContainer
       const elemHeading = document.createElement('H4');
-      elemHeading.classList.add("ml-4");
-      elemHeading.classList.add("mt-4");
+      elemHeading.classList.add("ml-2");
+      elemHeading.classList.add("mt-3");
+      // elemHeading.classList.add("text-right");
+
       elemHeading.innerText = oAssignment.Care_Plan;
       elemContainer.appendChild(elemHeading);
 
@@ -259,12 +334,73 @@ function addOpenAssignments(elemContainer) {
       elemCurrCP.id = `care-plan-${++idxCP}`;
     }
 
-    // add the assignment to the CP
+    // add current assignment to the CP element
     elemCurrCP.appendChild(getElemOpenAssignment(idxCP, oAssignment, idxAssignment++));
   }
 
   // add final CP to DOM
   elemContainer.appendChild(elemCurrCP);
+}
+
+/* *****************************************************************************
+********************************************************************************
+*  MENU HANDLERS
+********************************************************************************
+***************************************************************************** */
+
+/* ==================================================
+*  changeMenuAndContentArea()
+*
+*  Menu choice onClick event handers call this function to
+*  set the correct menu choice active and display the
+*  correct content area.  The onClick handler must still
+*  dynamically fill the content area.
+* =================================================== */
+function changeMenuAndContentArea(sMenuBtnID, elemContent) {
+
+  // hide all content sections
+  const aElemContent = document.querySelectorAll(".content");
+  for (const elem of aElemContent) {
+    elem.setAttribute("hidden", true);
+  }
+
+  // set all menu buttons inactive
+  const aElemNavLink = document.querySelectorAll(".nav-link");
+  for (const elemNavLink of aElemNavLink) {
+    elemNavLink.classList.remove("active");
+  }
+
+  // set current menu choice active
+  document.getElementById(sMenuBtnID).classList.add("active");
+
+  // show menu's content area
+  elemContent.removeAttribute("hidden");
+}
+
+/* ==================================================
+*  onMenuHome()
+*
+*  Menu selection
+* =================================================== */
+function onMenuHome() {
+  changeMenuAndContentArea("nav--home", gelemContentHome);
+}
+
+/* ==================================================
+*  renderOpenAssignments()
+*
+*  Called by onMenuOpenAssignments to load the DOM with the
+*  open assgnments.
+* =================================================== */
+function renderOpenAssignments(elemContainer) {
+
+  // Sort assignments for display
+  gaOpenAssignments.sort(sortAssignments);
+
+  // Load DOM with open assignments
+  addOpenAssignments(elemContainer);
+
+  // ~~
 }
 
 /* ==================================================
@@ -279,7 +415,7 @@ function onMenuOpenAssignments() {
   const elemOpenAssignments = document.getElementById("list-open-assignments");
   elemOpenAssignments.innerHTML = ""; // clear it from last rendering
 
-  // show loading spinner
+  // Unhide loading spinner
   document.querySelector("#content--open-assignments .spinner").removeAttribute("hidden");
 
   // make AJAX call
@@ -290,14 +426,12 @@ function onMenuOpenAssignments() {
       // Parse the returned JSON into an array of assignments
       gaOpenAssignments = JSON.parse(oResponse.data, dateReviver);
 
-      // Sort assignments for display
-      gaOpenAssignments.sort(sortAssignments);
-
-      // Load DOM with open assignments
-      addOpenAssignments(elemOpenAssignments);
+      // render the open assignments content area
+      renderOpenAssignments(elemOpenAssignments);
 
       // Hide loading spinner
       document.querySelector("#content--open-assignments .spinner").setAttribute("hidden", true);
+
     }) // then
     .catch((error) => {
       // display AJAX error msg
@@ -325,6 +459,13 @@ function onMenuMyAssignments() {
 function onMenuMyStats() {
   changeMenuAndContentArea("nav--my-stats", gelemContentMyStats);
 }
+
+
+/* *****************************************************************************
+********************************************************************************
+*  DOM AND INITIAL SETUP
+********************************************************************************
+***************************************************************************** */
 
 /* ==================================================
 *  DOM loaded, setup and set button event listener

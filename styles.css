@@ -1,6 +1,32 @@
+/* *****************************************
+*  GENERAL
+******************************************** */
+
+/* background banner at top of page */
+#banner {
+  /* Set a dark gray background color to blend with image to lighten the image */
+  background: #626262 url("./images/banner.jpg") no-repeat center;
+  background-blend-mode: screen;
+
+  /* background-image: url("./images/banner.jpg") */
+  /* background: url("./images/banner.jpg") no-repeat center; */
+}
+
 #logo {
   width: 100px;
 }
+
+/* waiting spinner during ajax calls */
+.spinner {
+  width: 100px;
+  height: 100px;
+  text-align: center;
+}
+
+
+/* *****************************************
+*  LOGIN FORM
+******************************************** */
 
 input {
   border-radius: 5px;
@@ -12,13 +38,6 @@ input {
     color: grey;
     opacity: 0.5;
 }
-
-.spinner {
-  width: 100px;
-  height: 100px;
-  text-align: center;
-}
-
 fieldset {
   padding: 10px 10px 5px 10px;
   margin-bottom: 3px;
@@ -31,33 +50,76 @@ fieldset {
   color: white;
   background: #138D75;
   font-weight: lighter;
-  /* #A2D9CE; */
-  /* lightgray; */
-}
-.card-header {
-  height: 50px;
-  background-color: lightgreen;
 }
 
-.collapsed {
-  background-color: lightblue;
-}
 
-.card-body {
-  background-color: #FDF2E9;
-}
+/* *****************************************
+*  PAGE CONTENT AREA
+******************************************** */
 
 .content {
   background-color: lavender;
   padding: 15px;
 }
 
-#banner {
-  /* Set a dark gray background color to blend with image to lighten the image */
-  background: #626262 url("./images/banner.jpg") no-repeat center;
-  background-blend-mode: screen;
+/* *****************************************
+*  TABLE TO DISPLAY ASSIGNMENT DETAILS
+******************************************** */
+  /* border: solid;   NOT WORKING, WON'T USE RADIUS ON THE BS CARDS  */
+table {
+  border-radius:   20px;
+  border-spacing:  0;
+  border-width:    2px;
+  box-shadow:      5px 5px 5px #777777;
+  background: #FDEBD0;
+  padding: 15px;
+  /* #DCEDC8; */
+  /* #FEF5E7; */
+  /* #FAD7A0; */
+}
 
+td, tr, th {
+  border-width: 0px;
+  padding:      6px;
+}
 
-  /* background-image: url("./images/banner.jpg") */
-  /* background: url("./images/banner.jpg") no-repeat center; */
+td {
+  vertical-align: top;
+  padding-right: 12px;
+  /* want a little more space on the right */
+}
+
+th {
+  /* sections headings for the assignment details */
+  vertical-align: top;
+  font-weight:    bold;
+  text-align:     right;
+  padding-left:   12px;
+  /* want a little more space on the left */
+}
+
+/* *****************************************
+*  COLLAPSING LISTS TO VIEW ASSIGNMENTS (Open and My)
+******************************************** */
+
+/* Coloring the card-headers is a bit of a kludge.  The default .card-header
+   is set with the highlight color for selected / opened card.  The
+   .collapsed class overrides this and will be the default color that all
+   card-headers have when the page loads.
+ */
+
+.card-header {
+  /* the highlight color for opened cards */
+  background-color: lightblue;
+}
+.card-header:hover {
+  background-color: lightblue;
+}
+.collapsed {
+  /* the standard color overriding .card-header */
+  background-color: rgb(247, 247, 247);
+}
+.card-body {
+  background-color: white;
+  /* #FDF2E9; */
 }
