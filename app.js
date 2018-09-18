@@ -481,7 +481,7 @@ function getVolunteerAssignments(aVolunteerAssignments) {
   for (const oAssignment of aVolunteerAssignments) {
 
     // add assignment to the Accordion element
-    elemAccordion.appendChild(getElemVolAssignment(oAssignment, idxAssignment++, new Date()));
+    elemAccordion.appendChild(getElemVolAssignment(oAssignment, idxAssignment++));
   }
   return elemAccordion;
 }
@@ -707,7 +707,7 @@ function onMenuOpenAssignments() {
 *  Menu selecion
 * =================================================== */
 function onMenuVolunteerAssignments() {
-    // move to this menu choice
+  // move to this menu choice
   changeMenuAndContentArea("nav--volunteer-assignments", gelemContentVolunteerAssignments);
 
   // convenience copy of the span to place list of open assignments
@@ -716,6 +716,9 @@ function onMenuVolunteerAssignments() {
 
   // Unhide loading spinner
   document.querySelector("#content--volunteer-assignments .spinner").removeAttribute("hidden");
+
+  // hide the message that volunteer has no Assignments
+  document.getElementById("volunteer-has-no-assignments").setAttribute("hidden", true);
 
   let url = `${BASE_URL}?action=${URL_ACTION_VOLUNTEER_ASSIGNMENTS}`;
   url += `&sVolunteer=${document.getElementById("login-name").value}`;
@@ -731,10 +734,16 @@ function onMenuVolunteerAssignments() {
       // able to apply the reviver.
       const aVolunteerAssignments = JSON.parse(oResponse.data, dateReviver);
 
-      // render the open assignments content area
-      // renderOpenAssignments(elemOpenAssignments);
-      // addOpenAssignments(elemContainer);
-      elemContainer.appendChild(getVolunteerAssignments(aVolunteerAssignments));
+      // if volunteer has assignments to display, display them
+      if (aVolunteerAssignments.length) {
+        // render the volunteer assignments content area
+        // renderOpenAssignments(elemOpenAssignments);
+        // addOpenAssignments(elemContainer);
+        elemContainer.appendChild(getVolunteerAssignments(aVolunteerAssignments));
+      // no assigments for volunteer, unhide message to that effect
+      } else {
+        document.getElementById("volunteer-has-no-assignments").removeAttribute("hidden");
+      }
 
       // Hide loading spinner
       document.querySelector("#content--volunteer-assignments .spinner").setAttribute("hidden", true);

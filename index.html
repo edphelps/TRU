@@ -99,6 +99,7 @@
     <div id="content--open-assignments" class="content" hidden>
 
       <!-- Spinner's hidden flag controlled by js -->
+      <!-- A bit of a kludge, the div around the spinner doesn't hide and adds space below menu -->
       <div class="d-flex justify-content-center">
         <img class="spinner mt-4 mb-2" src="./images/spinner.gif" alt="" hidden>
       </div>
@@ -142,6 +143,7 @@
     <div id="content--volunteer-assignments" class="content" hidden>
 
       <!-- Spinner's hidden flag controlled by js -->
+      <!-- A bit of a kludge, the div around the spinner doesn't hide and adds space below menu -->
       <div class="d-flex justify-content-center">
         <img class="spinner mt-4 mb-2" src="./images/spinner.gif" alt="" hidden>
       </div>
@@ -149,6 +151,11 @@
       <!-- ajax data loads here -->
       <div id="list-volunteer-assignments">
         onMenuVolunteerAssignments() loads this section via ajax...
+      </div>
+
+      <!-- Displayed if there are no assignments for the volunteer -->
+      <div id="volunteer-has-no-assignments" hidden>
+        <h1 class="text-center mt-4">You have no assignments to list</h1>
       </div>
 
       <!-- Give some space for final card to expand w/o falling off bottom of screen -->
@@ -162,6 +169,7 @@
     <div id="content--volunteer-stats" class="content" hidden>
 
       <!-- Spinner's hidden flag controlled by js -->
+      <!-- A bit of a kludge, the div around the spinner doesn't hide and adds space below menu -->
       <div class="d-flex justify-content-center">
         <img class="spinner mt-4 mb-2" src="./images/spinner.gif" alt="" hidden>
       </div>
