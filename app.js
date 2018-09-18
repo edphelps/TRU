@@ -14,9 +14,9 @@
 ***************************************************************************** */
 
 const BASE_URL = "https://script.google.com/macros/s/AKfycbyzJBFIC8PFykacFyF1koj1hYH_oGLYy1t-7sUrIy79Xv9AGAA/exec";
-
 const URL_ACTION_GET_OPEN_ASSIGNMENTS = "getOpenAssignments";
 const URL_ACTION_TAKE_ASSIGNMENT = "takeAssignment";
+const URL_ACTION_VOLUNTEER_ASSIGNMENTS = "getVolunteerAssignments";
 
 const LOCAL_STORAGE_LOGIN_NAME = "login-name";
 const LOCAL_STORAGE_LOGIN_PSWD = "login-pswd";
@@ -28,10 +28,10 @@ const MILLISEC_IN_A_DAY = 1000 * 60 * 60 * 24;
 let gelemContentLogin = null;
 let gelemContentHome = null;
 let gelemContentOpenAssignments = null;
-let gelemContentMyAssignments = null;
-let gelemContentMyStats = null;
+let gelemContentVolunteerAssignments = null;
+let gelemContentVolunteerStats = null;
 
-// Array of open assignments
+// Array of open assignments loaded by ajax when displaying the open assoignments page
 let gaOpenAssignments = [];
 
 // user validation
@@ -78,36 +78,6 @@ function sortAssignments(oAssign1, oAssign2) {
   if (oAssign1.Timestamp < oAssign2.Timestamp)
     return 1;
   return 0;
-  // // Care_Plans are === so sort z-a by timestamp
-  // if (oAssign1.Timestamp < oAssign2.Timestamp)
-  //   return -1;
-  // if (oAssign2.Timestamp < oAssign1.Timestamp)
-  //   return 1;
-  // timestamps could be the same if they were manually set to
-  // a date to change the listing order
-  // return 0;
-}
-
-/* ==================================================
-*  getDateOnly
-*
-*  Get date-only string from date or "?" for bad dates.
-*
-*  @param dt (Date | anything) - Date to be turned into string, or anything else
-*                                which will return "?"
-*  @param bMonthDayOnly (optional bool) - T to only return Month/Day
-*
-*  @return (string) String in the format "01/05/2019", "01/05", or "?" if param
-*                   wasn't passed a valid date
-* =================================================== */
-function getDateOnly(_dt, bMonthDayOnly) {
-  const dt = new Date(_dt); // this allows the dt param to be Date or String
-  if (Number.isNaN(dt))
-    return "?";
-  return `${(dt.getMonth() < 9 ? "0" : "") + (dt.getMonth() + 1)}/${dt.getDate() < 10 ? "0" : ""}${dt.getDate()}${!bMonthDayOnly ? "/" + dt.getFullYear() : ""}`;
-  // return (dt.getMonth() < 9 ? "0" : "") +(dt.getMonth() + 1) + "/" + (dt.getDate() < 10 ? "0" : "") +
-  //    dt.getDate() + (!bMonthDayOnly ? "/" + dt.getFullYear() : "");
-
 }
 
 /* ==================================================
@@ -187,31 +157,44 @@ function onclickTakeIt(e, idxAssignment) {
 
   // build URL
   const oAssignment = gaOpenAssignments[idxAssignment];
-  url = BASE_URL + "?action=" + URL_ACTION_TAKE_ASSIGNMENT;
-  url += "&sVolunteer="+document.getElementById("login-name").value;
-  url += "&sPatientID="+oAssignment.Patient_ID;
-  url += "&sCarePlan="+oAssignment.Care_Plan;
-  url += "&sTimestamp="+oAssignment.Timestamp.toISOString();
-  console.log("** URL: "+url);
+  let url = `${BASE_URL}?action=${URL_ACTION_TAKE_ASSIGNMENT}`;
+  url += `&sVolunteer=${document.getElementById("login-name").value}`;
+  url += `&sPatientID=${oAssignment.Patient_ID}`;
+  url += `&sCarePlan=${oAssignment.Care_Plan}`;
+  url += `&sTimestamp=${oAssignment.Timestamp.toISOString()}`;
+  console.log(`** URL: ${url}`);
 
   // make AJAX call
   axios.get(url)
     .then((oResponse) => {
       console.log("-- ajax call responded --");
-
+      const oMessage = JSON.parse(oResponse.data);
       // Parse the returned JSON into an array of assignments
-      const sResponse = JSON.parse(oResponse.data);
-      console.log("response from AJAX call: "+sResponse);
+      // const sResponse = JSON.parse(oResponse.data);
+      console.log(`response from AJAX call: ${oMessage}`);
 
-      if (sResponse.message === "success") {
-        onMenuMyAssignments();
+      if (oMessage.message === "success") {
+        onMenuVolunteerAssignments();
       } else {
         e.target.classList.remove("btn-secondary");
         e.target.classList.add("btn-danger");
         e.target.innerText = "Assignment unavailable ";
-        document.getElementById("assignment-failed-error-message").innerText = sResponse.message;
+        document.getElementById("assignment-failed-error-message").innerText = oMessage.message;
         $('#modal-take-assigment-failed').modal();
       }
+      // // Parse the returned JSON into an array of assignments
+      // const sResponse = JSON.parse(oResponse.data);
+      // console.log("response from AJAX call: "+sResponse);
+      //
+      // if (sResponse.message === "success") {
+      //   onMenuMyAssignments();
+      // } else {
+      //   e.target.classList.remove("btn-secondary");
+      //   e.target.classList.add("btn-danger");
+      //   e.target.innerText = "Assignment unavailable ";
+      //   document.getElementById("assignment-failed-error-message").innerText = sResponse.message;
+      //   $('#modal-take-assigment-failed').modal();
+      // }
     }) // then
     .catch((error) => {
       // display AJAX error msg (can also be a throw from the .then section)
@@ -220,7 +203,6 @@ function onclickTakeIt(e, idxAssignment) {
       const sErrorMsg = JSON.stringify(error);
       console.log(sErrorMsg);
       // elemContainer.innerText = sErrorMsg;
-      debugger;
     }); // catch
 
   // setTimeout(() => {
@@ -247,6 +229,30 @@ function onclickTakeIt(e, idxAssignment) {
   // }, 500);
 }
 
+/* ==================================================
+*  getElemVolAssignmentDetails()
+*
+*  Helper to create the DOM element for an assignment's details
+* =================================================== */
+function getElemVolAssignmentDetails(idxAssignment, oAssignment) {
+  const elemTable = document.createElement('table');
+
+  // ADD DATA ROWS
+  elemTable.appendChild(makeRow("Stats", `${oAssignment.Age}yo ${oAssignment.Gender} with ${oAssignment.Diagnosis}`));
+  elemTable.appendChild(makeRow("Request", `${oAssignment.Care_Plan}: ${addHtmlBr(oAssignment.Request)}`));
+  elemTable.appendChild(makeRow("Location", `${oAssignment.Home_or_Facility}`));
+  elemTable.appendChild(makeRow("Address", `${addHtmlBr(oAssignment.Address)}`));
+  elemTable.appendChild(makeRow("Phone", `${oAssignment.Phone}`));
+  elemTable.appendChild(makeRow("Contacts", `${addHtmlBr(oAssignment.Family_Friends)}`));
+  elemTable.appendChild(makeRow("SW", `${oAssignment.SW}`));
+  elemTable.appendChild(makeRow("RN", `${oAssignment.RN}`));
+  elemTable.appendChild(makeRow("Direction", `${oAssignment.Directive}`));
+  elemTable.appendChild(makeRow("Religion", `${oAssignment.Religion}`));
+  elemTable.appendChild(makeRow("Military", `${oAssignment.Military}`));
+  elemTable.appendChild(makeRow("Story", `${addHtmlBr(oAssignment.Psychosocial)}`));
+
+  return elemTable;
+}
 /* ==================================================
 *  getElemOpenAssignmentDetails()
 *
@@ -276,15 +282,63 @@ function getElemOpenAssignmentDetails(idxAssignment, oAssignment) {
   elemTable.appendChild(elemTakeItRow);
 
   return elemTable;
-//   sOutput += "<tr>" +
-        // "<th class=accept-head>Accept</th>"+
-        // "<td class=accept-name>" +
-        //   "Your name: " +
-        //   "<input type=\"text\" id=\"sVolunteer"+assignmentIndex+"\">" +   // create unique field name, example: sVolunteer3
-        //   "&nbsp; <button type=\"button\" onclick=\"handleRequestAssignment("+assignmentIndex+")\">I Accept</button>" +
-        // "</td></tr>";
-// sOutput += "</table><p>";
+}
 
+/* ==================================================
+*  function getElemVolAssignment()
+*
+*  Builds and returns the card for a volunteer's assignment
+*
+*  @param oAssignment (object) the assignment to add
+*  @param idxAssignment (int)  index of the current care plan, used to create ID
+*  @return card element for the assignment
+* =================================================== */
+function getElemVolAssignment(oAssignment, idxAssignment) {
+
+  // CARD
+  // ----------------
+  // <div class="card">
+  const elemCard = document.createElement('div');
+  elemCard.classList.add("card");
+
+  // CARD HEADER
+  // ----------------
+  // <div class="card-header" data-toggle="collapse" data-target="#assignment-1">
+  const elemCardHeader = document.createElement('div');
+  elemCardHeader.classList.add("card-header");
+  elemCardHeader.classList.add("collapsed"); // required to get CSS coloring to work
+  elemCardHeader.classList.add("text-center");
+  elemCardHeader.setAttribute("data-toggle", "collapse");
+  elemCardHeader.setAttribute("data-target", `#assignment-${idxAssignment}`);
+
+  elemCardHeader.innerHTML = `${oAssignment.Patient_Name} (${oAssignment.Care_Plan})`;
+
+  // CARD BODY CONTAINER
+  // ----------------
+  // <div id="assignment-1" class="collapse" data-parent="#care-plan-1">
+  const elemCardBodyContainer = document.createElement('div');
+  elemCardBodyContainer.id = `assignment-${idxAssignment}`;
+  elemCardBodyContainer.classList.add("collapse");
+  elemCardHeader.setAttribute("data-parent", `#accordion`);
+
+  // CARD BODY
+  // ----------------
+  // <div class="card-body">
+  const elemCardBody = document.createElement('div');
+  elemCardBody.classList.add("card-body");
+
+  // content of card body / assignment details
+  // FIX: this isn't known
+  elemCardBody.appendChild(getElemVolAssignmentDetails(idxAssignment, oAssignment));
+  // elemCardBody.innerText = oAssignment.Post_Location;
+
+  // ADD EVERYTHING TO elemCard
+  // ----------------
+  elemCard.appendChild(elemCardHeader);
+  elemCard.appendChild(elemCardBodyContainer);
+  elemCardBodyContainer.appendChild(elemCardBody);
+
+  return elemCard;
 }
 
 /* ==================================================
@@ -292,9 +346,10 @@ function getElemOpenAssignmentDetails(idxAssignment, oAssignment) {
 *
 *  Builds and returns the card for an assignment
 *
-* @param oAssignment (object) the assignment to add
-* @param idxAssignment (int)  index of the current care plan, used to create ID
-* @param dtLastViewed (Date) date user last viewed open assignments, used to set 'New' pill
+*  @param oAssignment (object) the assignment to add
+*  @param idxAssignment (int)  index of the current care plan, used to create ID
+*  @param dtLastViewed (Date) date user last viewed open assignments, used to set 'New' pill
+*  @return card element for the assignment
 * =================================================== */
 function getElemOpenAssignment(oAssignment, idxAssignment, dtLastViewed) {
 
@@ -316,11 +371,11 @@ function getElemOpenAssignment(oAssignment, idxAssignment, dtLastViewed) {
 
   elemCardHeader.innerHTML = `${oAssignment.Post_Location}, ${oAssignment.Home_or_Facility} &nbsp;&nbsp;`;
   // how many days ago was it posted?
-  const elemSpan = document.createElement('span');
-  elemSpan.classList.add("text-muted");
-  elemSpan.classList.add("small");
+  // const elemSpan = document.createElement('span');
+  // elemSpan.classList.add("text-muted");
+  // elemSpan.classList.add("small");
   const iDaysAgo = Math.floor((new Date() - oAssignment.Timestamp) / MILLISEC_IN_A_DAY);
-  // const iDaysAgo = Math.floor((new Date() - oAssignment.Timestamp) / 1000 / 60 / 60 / 24);
+
   // orange pill, 7-14 days ago
   if (7 < iDaysAgo && iDaysAgo <= 14) {
     const elemBadge = document.createElement("span");
@@ -380,13 +435,65 @@ function getElemOpenAssignment(oAssignment, idxAssignment, dtLastViewed) {
 }
 
 /* ==================================================
+*  getVolunteerAssignments()
+*
+*  Loads passed container with assignments with the format below.
+*  Builds a BS collapsing list of cards to display  assignment details.
+*
+*   elemContainer (calling procedures has this)
+*     elemAccordion (BS container for collapsing cards)
+*       card (BS card for an assignment)
+*         header (BS card-header for assignment)
+*         details (BS collapsing element)
+*           details for an assignment
+*       card
+*         ....
+*
+*   <div id="list-open-assignments">
+*     <div id="Accordion">
+*       <h4></h4>
+*       <div class="card">
+*         <div class="card-header" data-toggle="collapse" data-target="#assignment-1">
+*         <div id="assignment-1" class="collapse" data-parent="#care-plan-1">
+*           <div class="card-body">
+*
+*  @param aVolunteerAssignments ([] of oAssignment) Array of volunteers assignments
+*  @return elemAccordion containing the care plans, assigments, and assigment details
+* =================================================== */
+function getVolunteerAssignments(aVolunteerAssignments) {
+
+  let idxAssignment = 0; // counter to setting card header and body ID references
+
+  // Sort assignments for display (by CP then date)
+  aVolunteerAssignments.sort((oAssign1, oAssign2) => {
+    if (oAssign1.Patient_Name < oAssign2.Patient_Name)
+      return -1;
+    if (oAssign2.Patient_Name < oAssign1.Patient_Name)
+      return 1;
+    return 0;
+  });
+
+  // create the container for all headings and to manage accordion elements
+  const elemAccordion = document.createElement('div');
+  elemAccordion.id = "accordion";
+
+  // for each assignment
+  for (const oAssignment of aVolunteerAssignments) {
+
+    // add assignment to the Accordion element
+    elemAccordion.appendChild(getElemVolAssignment(oAssignment, idxAssignment++, new Date()));
+  }
+  return elemAccordion;
+}
+
+/* ==================================================
 *  getOpenAssignments()
 *
 *  Loads passed container with open assignments with the format below.
 *  Care Plans are added as titles and a subfunction builds a BS collapsing
 *  list of cards to display the assignment details.
 *
-*   elemContainer (the passed param)
+*   elemContainer (calling procedure has this)
 *     elemAccordion (BS container for collapsing cards)
 *       CP Heading
 *       card (BS card for an assignment in the Care Plan)
@@ -522,6 +629,7 @@ function changeMenuAndContentArea(sMenuBtnID, elemContent) {
 *  Driven by an unvalidated user, covers all other menu choices
 * =================================================== */
 function onMenuLogin() {
+  // confusing: sets the nav to "Home" but the content to "gelemContentLogin"
   changeMenuAndContentArea("nav--home", gelemContentLogin);
 }
 
@@ -563,12 +671,20 @@ function onMenuOpenAssignments() {
     .then((oResponse) => {
       console.log("-- response successful --");
       // Parse the returned JSON into an array of assignments
+      // The data from API was double JSON.stringified() since axios does one
+      // round of JSON.parse() for us.  We want to JSON.parse() ourselves to be
+      // able to apply the reviver.
       gaOpenAssignments = JSON.parse(oResponse.data, dateReviver);
+      if (!gaOpenAssignments.message) {
 
-      // render the open assignments content area
-      // renderOpenAssignments(elemOpenAssignments);
-      // addOpenAssignments(elemContainer);
-      elemContainer.appendChild(getOpenAssignments());
+        // render the open assignments content area
+        // renderOpenAssignments(elemOpenAssignments);
+        // addOpenAssignments(elemContainer);
+        elemContainer.appendChild(getOpenAssignments());
+      } else {
+        console.log("-- error --");
+        console.log(gaOpenAssignments.message);
+      }
 
       // Hide loading spinner
       document.querySelector("#content--open-assignments .spinner").setAttribute("hidden", true);
@@ -586,21 +702,62 @@ function onMenuOpenAssignments() {
 }
 
 /* ==================================================
-*  onMenuMyAssignments()
+*  onMenuVolunteerAssignments()
 *
 *  Menu selecion
 * =================================================== */
-function onMenuMyAssignments() {
-  changeMenuAndContentArea("nav--my-assignments", gelemContentMyAssignments);
+function onMenuVolunteerAssignments() {
+    // move to this menu choice
+  changeMenuAndContentArea("nav--volunteer-assignments", gelemContentVolunteerAssignments);
+
+  // convenience copy of the span to place list of open assignments
+  const elemContainer = document.getElementById("list-volunteer-assignments");
+  elemContainer.innerText = ""; // clear it from last rendering
+
+  // Unhide loading spinner
+  document.querySelector("#content--volunteer-assignments .spinner").removeAttribute("hidden");
+
+  let url = `${BASE_URL}?action=${URL_ACTION_VOLUNTEER_ASSIGNMENTS}`;
+  url += `&sVolunteer=${document.getElementById("login-name").value}`;
+  console.log(`URL: ${url}`);
+  console.log("~~~~~~~~~~~~~~~~~~~~~");
+  // make AJAX call
+  axios.get(url)
+    .then((oResponse) => {
+      console.log("-- ajax call responded --");
+      // Parse the returned JSON into an array of assignments
+      // The data from API was double JSON.stringified() since axios does one
+      // round of JSON.parse() for us.  We want to JSON.parse() ourselves to be
+      // able to apply the reviver.
+      const aVolunteerAssignments = JSON.parse(oResponse.data, dateReviver);
+
+      // render the open assignments content area
+      // renderOpenAssignments(elemOpenAssignments);
+      // addOpenAssignments(elemContainer);
+      elemContainer.appendChild(getVolunteerAssignments(aVolunteerAssignments));
+
+      // Hide loading spinner
+      document.querySelector("#content--volunteer-assignments .spinner").setAttribute("hidden", true);
+
+    }) // then
+    .catch((error) => {
+      // display AJAX error msg (can also be a throw from the .then section)
+      console.log("-- error --");
+      console.log(`${error}`);
+      const sErrorMsg = JSON.stringify(error);
+      console.log(sErrorMsg);
+      elemContainer.innerText = sErrorMsg;
+      debugger;
+    }); // catch
 }
 
 /* ==================================================
-*  onMenuMyStats()
+*  onMenuVolunteerStats()
 *
 *  Menu selection
 * =================================================== */
-function onMenuMyStats() {
-  changeMenuAndContentArea("nav--my-stats", gelemContentMyStats);
+function onMenuVolunteerStats() {
+  changeMenuAndContentArea("nav--volunteer-stats", gelemContentVolunteerStats);
 }
 
 
@@ -680,8 +837,8 @@ document.addEventListener('DOMContentLoaded', () => {
   gelemContentLogin = document.getElementById("content--login");
   gelemContentHome = document.getElementById("content--home");
   gelemContentOpenAssignments = document.getElementById("content--open-assignments");
-  gelemContentMyAssignments = document.getElementById("content--my-assignments");
-  gelemContentMyStats = document.getElementById("content--my-stats");
+  gelemContentVolunteerAssignments = document.getElementById("content--volunteer-assignments");
+  gelemContentVolunteerStats = document.getElementById("content--volunteer-stats");
 
   // load last login name / password
   initUserValidation();
@@ -693,8 +850,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // setup nav bar selection handlers
   document.getElementById("nav--home").onclick = onMenuHome;
   document.getElementById("nav--open-assignments").onclick = onMenuOpenAssignments;
-  document.getElementById("nav--my-assignments").onclick = onMenuMyAssignments;
-  document.getElementById("nav--my-stats").onclick = onMenuMyStats;
+  document.getElementById("nav--volunteer-assignments").onclick = onMenuVolunteerAssignments;
+  document.getElementById("nav--volunteer-stats").onclick = onMenuVolunteerStats;
 
   onkeyupLogin(); // validate user and prevent other menu choice for unvalidated user
 
