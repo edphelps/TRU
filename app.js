@@ -14,6 +14,7 @@
 ***************************************************************************** */
 
 const BASE_URL = "https://script.google.com/macros/s/AKfycbyzJBFIC8PFykacFyF1koj1hYH_oGLYy1t-7sUrIy79Xv9AGAA/exec";
+
 const URL_ACTION_GET_OPEN_ASSIGNMENTS = "getOpenAssignments";
 const URL_ACTION_TAKE_ASSIGNMENT = "takeAssignment";
 
@@ -177,33 +178,73 @@ function makeRow(sTh, sTd) {
 * =================================================== */
 function onclickTakeIt(e, idxAssignment) {
   console.log(`take: ${idxAssignment}`);
+
+  // change button: disable, add wait message
   e.target.setAttribute("disabled", true);
   e.target.classList.remove("btn-success");
   e.target.classList.add("btn-secondary");
   e.target.innerText = "Thank-you, please wait a moment....";
-  setTimeout(() => {
 
-    const oAssignment = gaOpenAssignments[idxAssignment];
+  // build URL
+  const oAssignment = gaOpenAssignments[idxAssignment];
+  url = BASE_URL + "?action=" + URL_ACTION_TAKE_ASSIGNMENT;
+  url += "&sVolunteer="+document.getElementById("login-name").value;
+  url += "&sPatientID="+oAssignment.Patient_ID;
+  url += "&sCarePlan="+oAssignment.Care_Plan;
+  url += "&sTimestamp="+oAssignment.Timestamp.toISOString();
+  console.log("** URL: "+url);
 
+  // make AJAX call
+  axios.get(url)
+    .then((oResponse) => {
+      console.log("-- ajax call responded --");
 
-    url = BASE_URL + "?action=" + URL_ACTION_TAKE_ASSIGNMENT;
-    url += "&sVolunteer="+document.getElementById("login-name").value;
-    url += "&sPatientID="+oAssignment.Patient_ID;
-    url += "&sCarePlan="+oAssignment.Care_Plan;
-    url += "&sTimestamp="+oAssignment.Timestamp.toISOString();
-    console.log("** URL: "+url);
-    const success = Math.random() < 0.5;
-    if (success) {
-      onMenuMyAssignments();
-    } else {
-      e.target.classList.remove("btn-secondary");
-      e.target.classList.add("btn-danger");
-      e.target.innerText = "Assignment unavailable ";
-      document.getElementById("assignment-failed-error-message").innerText = "Random number generator";
-      $('#modal-take-assigment-failed').modal();
-    }
-  }, 500);
-  // console.log(e);
+      // Parse the returned JSON into an array of assignments
+      const sResponse = JSON.parse(oResponse.data);
+      console.log("response from AJAX call: "+sResponse);
+
+      if (sResponse.message === "success") {
+        onMenuMyAssignments();
+      } else {
+        e.target.classList.remove("btn-secondary");
+        e.target.classList.add("btn-danger");
+        e.target.innerText = "Assignment unavailable ";
+        document.getElementById("assignment-failed-error-message").innerText = sResponse.message;
+        $('#modal-take-assigment-failed').modal();
+      }
+    }) // then
+    .catch((error) => {
+      // display AJAX error msg (can also be a throw from the .then section)
+      console.log("-- error --");
+      console.log(`${error}`);
+      const sErrorMsg = JSON.stringify(error);
+      console.log(sErrorMsg);
+      // elemContainer.innerText = sErrorMsg;
+      debugger;
+    }); // catch
+
+  // setTimeout(() => {
+  //
+  //   const oAssignment = gaOpenAssignments[idxAssignment];
+  //
+  //
+  //   url = BASE_URL + "?action=" + URL_ACTION_TAKE_ASSIGNMENT;
+  //   url += "&sVolunteer="+document.getElementById("login-name").value;
+  //   url += "&sPatientID="+oAssignment.Patient_ID;
+  //   url += "&sCarePlan="+oAssignment.Care_Plan;
+  //   url += "&sTimestamp="+oAssignment.Timestamp.toISOString();
+  //   console.log("** URL: "+url);
+  //   const success = Math.random() < 0.5;
+  //   if (success) {
+  //     onMenuMyAssignments();
+  //   } else {
+  //     e.target.classList.remove("btn-secondary");
+  //     e.target.classList.add("btn-danger");
+  //     e.target.innerText = "Assignment unavailable ";
+  //     document.getElementById("assignment-failed-error-message").innerText = "Random number generator";
+  //     $('#modal-take-assigment-failed').modal();
+  //   }
+  // }, 500);
 }
 
 /* ==================================================
@@ -514,13 +555,13 @@ function onMenuOpenAssignments() {
   // Unhide loading spinner
   document.querySelector("#content--open-assignments .spinner").removeAttribute("hidden");
 
-  const url = BASE_URL + "?" + URL_ACTION_GET_OPEN_ASSIGNMENTS;
+  const url = BASE_URL + "?action=" + URL_ACTION_GET_OPEN_ASSIGNMENTS;
+  console.log("URL: " + url);
 
   // make AJAX call
   axios.get(url)
     .then((oResponse) => {
       console.log("-- response successful --");
-
       // Parse the returned JSON into an array of assignments
       gaOpenAssignments = JSON.parse(oResponse.data, dateReviver);
 
