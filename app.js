@@ -7,6 +7,7 @@
    Menu Handlers -- contain AJAX calls
 */
 
+
 /* *****************************************************************************
 ********************************************************************************
 *  Globals
@@ -17,12 +18,15 @@ const BASE_URL = "https://script.google.com/macros/s/AKfycbyzJBFIC8PFykacFyF1koj
 const URL_ACTION_GET_OPEN_ASSIGNMENTS = "getOpenAssignments";
 const URL_ACTION_TAKE_ASSIGNMENT = "takeAssignment";
 const URL_ACTION_VOLUNTEER_ASSIGNMENTS = "getVolunteerAssignments";
+const URL_ACTION_VOLUNTEER_DOCS = "getVolunteerDocs";
 
 const LOCAL_STORAGE_LOGIN_NAME = "login-name";
 const LOCAL_STORAGE_LOGIN_PSWD = "login-pswd";
 const LOCAL_STORAGE_DATE_VIEWED_OPEN = "last-viewed-open";
 
 const MILLISEC_IN_A_DAY = 1000 * 60 * 60 * 24;
+
+const FIRST_YEAR_OF_DOCS = 2007;
 
 // convenience references to content elements
 let gelemContentLogin = null;
@@ -328,7 +332,6 @@ function getElemVolAssignment(oAssignment, idxAssignment) {
   elemCardBody.classList.add("card-body");
 
   // content of card body / assignment details
-  // FIX: this isn't known
   elemCardBody.appendChild(getElemVolAssignmentDetails(idxAssignment, oAssignment));
   // elemCardBody.innerText = oAssignment.Post_Location;
 
@@ -743,9 +746,13 @@ function onMenuVolunteerAssignments() {
 
       // if volunteer has assignments to display, display them
       if (aVolunteerAssignments.length) {
-        // render the volunteer assignments content area
-        // renderOpenAssignments(elemOpenAssignments);
-        // addOpenAssignments(elemContainer);
+        // add a title
+        const elemHeading = document.createElement('H4');
+        elemHeading.classList.add("ml-2");
+        elemHeading.classList.add("mt-3");
+        elemHeading.innerText = "My assignments";
+        elemContainer.appendChild(elemHeading);
+
         elemContainer.appendChild(getVolunteerAssignments(aVolunteerAssignments));
       // no assigments for volunteer, unhide message to that effect
       } else {
@@ -768,12 +775,110 @@ function onMenuVolunteerAssignments() {
 }
 
 /* ==================================================
+*  getVolunteerStats()
+*
+*  @param sVolunteerDocs (doc objects)
+*  @return elem with all the stats setup for display
+* =================================================== */
+function getVolunteerStats(aVolunteerDocs) {
+  /* *******************************************************
+  * getDurationHours(dtDuration)
+  * Helper to get hours from a duraction entered into the docs sheet.
+  *  @param (date) dtDuration - a date for a duration.  These start on
+  *                             12/30/1899 00:00:00 for some reason.
+  * return (float) - number of decimal hours represented by the duration
+  ******************************************************* */
+  function getDurationHours(dtDuration) {
+    return (dtDuration.getTime() / 1000 / 60 / 60) + 613649;
+  }
+
+  const aYearlyTotals = []; // [0]=year 2007 totals, [1]=2008 year totals, etc
+
+  for (const aDoc of aVolunteerDocs) {
+    const iYear = aDoc["Date of service"].getFullYear();
+    let oYearlyTotals = aYearlyTotals[iYear - FIRST_YEAR_OF_DOCS];
+    // if no object in this array position yet, create an object for the year
+    // to store the total for the year
+    if (!oYearlyTotals) {
+      oYearlyTotals = {};
+      oYearlyTotals.iYear = iYear;
+      oYearlyTotals.iCalls = 0;
+      oYearlyTotals.fHours = 0;
+      oYearlyTotals.fMiles = 0;
+      aYearlyTotals[iYear - FIRST_YEAR_OF_DOCS] = oYearlyTotals;
+    }
+    const duration = new Date(aDoc["Total time spent"]);
+    const fCalcHours = getDurationHours(duration);
+    oYearlyTotals.fHours += fCalcHours;
+    oYearlyTotals.iCalls += Number(aDoc["Number of calls, if any"]); // must use Number() or first blank entry will turn iCalls into a string
+    // use Number() or 1st blank  will turn fMiles into string
+    oYearlyTotals.fMiles += Number(aDoc.Mileage);
+  }
+  const elem = document.createElement('p');
+  let s = "";
+  for (const oYr of aYearlyTotals) {
+    s += `${JSON.stringify(oYr)}<br>`;
+  }
+  elem.innerHTML = JSON.stringify(s);
+  return elem;
+}
+
+/* ==================================================
 *  onMenuVolunteerStats()
 *
 *  Menu selection
 * =================================================== */
 function onMenuVolunteerStats() {
   changeMenuAndContentArea("nav--volunteer-stats", gelemContentVolunteerStats);
+
+  // convenience copy of the span to place list of open assignments
+  const elemContainer = document.getElementById("list-volunteer-stats");
+  elemContainer.innerText = ""; // clear it from last rendering
+
+  // Unhide loading spinner
+  document.querySelector("#content--volunteer-stats .spinner").removeAttribute("hidden");
+
+  // hide the message that volunteer has no Assignments
+  document.getElementById("volunteer-has-no-docs").setAttribute("hidden", true);
+
+  let url = `${BASE_URL}?action=${URL_ACTION_VOLUNTEER_DOCS}`;
+  url += `&sVolunteer=${document.getElementById("login-name").value}`;
+  console.log(`URL: ${url}`);
+  console.log("~~~~~~~~~~~~~~~~~~~~~");
+  // make AJAX call
+  axios.get(url)
+    .then((oResponse) => {
+      console.log("-- ajax call responded --");
+      // Parse the returned JSON into an array of assignments
+      // The data from API was double JSON.stringified() since axios does one
+      // round of JSON.parse() for us.  We want to JSON.parse() ourselves to be
+      // able to apply the reviver.
+      const aVolunteerDocs = JSON.parse(oResponse.data, dateReviver);
+
+      // if volunteer has assignments to display, display them
+      if (aVolunteerDocs.length) {
+        // render the volunteer assignments content area
+        // renderOpenAssignments(elemOpenAssignments);
+        // addOpenAssignments(elemContainer);
+        elemContainer.appendChild(getVolunteerStats(aVolunteerDocs));
+      // no assigments for volunteer, unhide message to that effect
+      } else {
+        document.getElementById("volunteer-has-no-docs").removeAttribute("hidden");
+      }
+
+      // Hide loading spinner
+      document.querySelector("#content--volunteer-stats .spinner").setAttribute("hidden", true);
+
+    }) // then
+    .catch((error) => {
+      // display AJAX error msg (can also be a throw from the .then section)
+      console.log("-- error --");
+      console.log(`${error}`);
+      const sErrorMsg = JSON.stringify(error);
+      console.log(sErrorMsg);
+      elemContainer.innerText = sErrorMsg;
+      debugger;
+    }); // catch
 }
 
 

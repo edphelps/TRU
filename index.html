@@ -39,6 +39,11 @@
           <!-- </form> -->
         </div> <!-- col -->
 
+        <!-- COLUMN title -->
+        <div class="col">
+          <h2 class="mb-2 font-weight-bold">Volunteer<br>Assignments</h3>
+        </div> <!-- col -->
+
         <!-- COLUMN logo -->
         <div class="col">
           <img class="float-right" id="logo" src="./images/tru-logo.png" alt="TRU logo">
@@ -84,6 +89,10 @@
     <!-- ============================================= -->
     <div id="content--home" class="content" hidden>
       <H1>Welcome!</H1>
+      <p><a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLScvPFeWj4e0X-S002u8uiOmLJz8JVRt1_vCS4oBCGQUdR8j5Q/viewform">
+        Submit a doc</a></p>
+      <p><a  href="https://sites.google.com/trucare.org/volunteers/home">
+        Return to Volunteers Home Page</a></p>
       <p>Contact information:</p>
       <ul>
         <li>Triage: 303-123-4567</li>
@@ -176,11 +185,16 @@
       </div>
 
       <!-- ajax data loads here -->
-      <div id="list-volunteer-assignments" class="auto-clear">
+      <div id="list-volunteer-stats" class="auto-clear">
         onMenuVolunteerStats() loads this section via ajax...
       </div>
 
-      <!-- Give some space for final card to expand w/o falling off bottom of screen -->
+      <!-- Displayed if there are no docs for the volunteer -->
+      <div id="volunteer-has-no-docs" hidden>
+        <h1 class="text-center mt-4">You have no docs to list</h1>
+      </div>
+
+      <!-- Give some space to match other pages -->
       <p>&nbsp;</p>
 
     </div> <!-- content--volunteer-stats -->
