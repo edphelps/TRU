@@ -607,6 +607,13 @@ function changeMenuAndContentArea(sMenuBtnID, elemContent) {
     elem.setAttribute("hidden", true);
   }
 
+  // remove the dynamic AJAX content from each 'page', otherwise
+  // the generated element IDs start to conflict in the accordion lists
+  const aElemAutoClear = document.querySelectorAll(".auto-clear");
+  for (const elem of aElemAutoClear) {
+    elem.innerHTML = "";
+  }
+
   // set all menu buttons inactive
   const aElemNavLink = document.querySelectorAll(".nav-link");
   for (const elemNavLink of aElemNavLink) {

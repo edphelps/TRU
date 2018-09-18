@@ -48,7 +48,7 @@ fieldset {
 
   color: white;
   font-weight: lighter;
-  
+
   /* set background in case app gets stuck before setting valid or invalid classes */
   background: lightgray;
 }
@@ -73,6 +73,11 @@ fieldset {
 .content {
   background-color: lavender;
   padding: 15px;
+}
+
+.auto-clear {
+  /* class used as a marker for divs that are filled in by ajax */
+  /* when changing to another menu all divs with this class are set to "" */
 }
 
 /* *****************************************
@@ -118,7 +123,7 @@ th {
 /* Coloring the card-headers is a bit of a kludge.  The default .card-header
    is set with the highlight color for selected / opened card.  The
    .collapsed class overrides this and will be the default color that all
-   card-headers have when the page loads.
+   card-headers have when the page loads since they all load in a collapsed state.
  */
 
 .card-header {
@@ -127,6 +132,7 @@ th {
 }
 .card-header:hover {
   background-color: lightblue;
+  cursor: pointer;
 }
 .collapsed {
   /* the standard color overriding .card-header */
