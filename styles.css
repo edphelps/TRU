@@ -2,11 +2,18 @@
 *  GENERAL
 ******************************************** */
 
+body {
+  /* to keep page form exceeding width of the banner */
+  max-width: 940px;
+}
+
 /* background banner at top of page */
 #banner {
   /* Set a dark gray background color to blend with image to lighten the image */
-  background: #626262 url("./images/banner.jpg") no-repeat center;
-  background-blend-mode: screen;
+  /* background: #626262 url("./images/banner.png") no-repeat center; */
+  /* background-blend-mode: screen; */
+
+  background: url("./images/banner.png") no-repeat center;
 
   /* background-image: url("./images/banner.jpg") */
   /* background: url("./images/banner.jpg") no-repeat center; */
@@ -83,7 +90,10 @@ fieldset {
 }
 
 .login--valid {
-  background: #138D75;
+  background: rgb(81, 142, 48);
+  /* background: rgb(48, 101, 26); */
+  /* background: rgb(35, 80, 19); */
+  /* background: #138D75; */
   /* border-color: darkgrey; */
   box-shadow: 0 0 10px 1px black;
 }

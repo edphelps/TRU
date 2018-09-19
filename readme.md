@@ -20,10 +20,10 @@ The site links to:
 A single password is used for all users and is currently hard-coded into the
 app.  Application saves login information to local storage.
 
-## invalid login
+### invalid login
 ![Example](screenshots/login-invalid.png)
 
-## valid login
+### valid login
 ![Example](screenshots/login-valid.png)
 
 
@@ -39,27 +39,27 @@ they were posted.  Badges highlight:
 Clicking an assignment will slide it open to reveal basic information on the
 assignment with names redacted (they appears as "#name#" in the text).
 
-## assignments page
+### assignments page
 ![Example](screenshots/open-assignments.png)
 
 At the bottom of the assignment details is a button to take the assignment.
 
-## take-it button
+### take-it button
 ![Example](screenshots/take-it-btn.png)
 
 When a user clicks to take an assignment the button changes to a wait message
 while an AJAX call is made to try to take the assignment.  
 
-## wait mutton
+### wait button
 ![Example](screenshots/take-it-wait-btn.png)
 
 If there is a problema modal is displayed and the button changes to
 "Assignment Unavailable".
 
-## failed to take assignment modal
+### failed to take assignment modal
 ![Example](screenshots/take-it-failed-modal.png)
 
-## failed to take assignment button
+### failed to take assignment button
 ![ExampleÎ](screenshots/take-it-failed-btn.png)
 
 
@@ -81,6 +81,9 @@ of assignments (open and assigned) and another spreadsheet with the 'docs'
 submitted by volunteers.
 
 The code for this is in server.js and designed to run as a Google Apps Scripts
-project.
+project on their servers.
 
-Data is maintained by the edphelps@trucare.org Google account.
+Data is maintained and server.js is executed in the context of the e
+dphelps@trucare.org Google account.
+
+Banner from http://301stockinvesting.com/05/2018/abstract-banner-vector-png/banner
