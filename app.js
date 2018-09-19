@@ -118,29 +118,91 @@ function addHtmlBr(sText) {
 ***************************************************************************** */
 
 /* ==================================================
-*  getCarePlanHeading()
+*  makeRowHeading()
 *
-*  Helper for onMenuOpenAssignments to create a CarePlanHeading element
+*  Create a row element for a table header
+*
+*  @param sTh (string) the heading text for row
+*  @param ...sTr (string parameters) the col2,3,4... body text for the row
+*  @return the row element
 * =================================================== */
-// function getCarePlanHeading(sCarePlan) {
-//   const elemCarePlan = document.createElement('H3');
-//   elemCarePlan.innerText = sCarePlan;
-//   return elemCarePlan;
-// }
+function makeRowHeading(...sThs) {
+  const elemRow = document.createElement("tr");
+  for (const sTh of sThs) {
+    const elemColTh = document.createElement("th");
+    elemColTh.innerHTML = sTh; // need this for elements that use addHtmlBr()
+    elemRow.appendChild(elemColTh);
+  }
+  return elemRow;
+}
 
-function makeRow(sTh, sTd) {
+
+/* ==================================================
+*  makeSpanningRow()
+*
+*  Create a row element that spans all columns in the table
+*
+*  @param sTd (string) the text
+*  @param iColsToSpan (int) the number of columns to span
+*  @return the row element
+* =================================================== */
+function makeSpanningRow(sTd, iColsToSpan) {
+  // console.log("iColsToSpan: "+iColsToSpan);
+  const elemRow = document.createElement("tr");
+  const elemColTd = document.createElement("td");
+  elemColTd.classList.add("text-left");
+  elemColTd.innerHTML = sTd; // need this for elements that use addHtmlBr()
+  elemColTd.setAttribute("colspan", iColsToSpan.toString());
+  elemRow.appendChild(elemColTd);
+  return elemRow;
+}
+
+/* ==================================================
+*  makeRow()
+*
+*  Create a row element
+*
+*  @param sTh (string) the heading text for row
+*  @param ...sTr (string parameters) the col2,3,4... body text for the row
+*  @return the row element
+* =================================================== */
+function makeRow(sTh, ...sTds) {
   const elemRow = document.createElement("tr");
   const elemColTh = document.createElement("th");
-  const elemColTd = document.createElement("td");
-
   elemColTh.innerText = sTh;
-  elemColTd.innerHTML = sTd; // need this for elements that use addHtmlBr()
 
   elemRow.appendChild(elemColTh);
-  elemRow.appendChild(elemColTd);
+  for (const sTd of sTds) {
+    const elemColTd = document.createElement("td");
+    elemColTd.innerHTML = sTd; // need this for elements that use addHtmlBr()
+    elemRow.appendChild(elemColTd);
+  }
 
   return elemRow;
 }
+
+/* ==================================================
+*  makeRow()
+*
+*  Create a row element
+*
+*  @param sTh (string) the heading text for row
+*  @param sTr (string) the col2 budy text for the row
+*  @return the row element
+* =================================================== */
+// function makeRow(sTh, sTd) {
+//   const elemRow = document.createElement("tr");
+//   const elemColTh = document.createElement("th");
+//   const elemColTd = document.createElement("td");
+//
+//   elemColTh.innerText = sTh;
+//   elemColTd.innerHTML = sTd; // need this for elements that use addHtmlBr()
+//
+//   elemRow.appendChild(elemColTh);
+//   elemRow.appendChild(elemColTd);
+//
+//   return elemRow;
+// }
 
 /* ==================================================
 *  onclickTakeIt()
@@ -186,19 +248,6 @@ function onclickTakeIt(e, idxAssignment) {
         document.getElementById("assignment-failed-error-message").innerText = oMessage.message;
         $('#modal-take-assigment-failed').modal();
       }
-      // // Parse the returned JSON into an array of assignments
-      // const sResponse = JSON.parse(oResponse.data);
-      // console.log("response from AJAX call: "+sResponse);
-      //
-      // if (sResponse.message === "success") {
-      //   onMenuMyAssignments();
-      // } else {
-      //   e.target.classList.remove("btn-secondary");
-      //   e.target.classList.add("btn-danger");
-      //   e.target.innerText = "Assignment unavailable ";
-      //   document.getElementById("assignment-failed-error-message").innerText = sResponse.message;
-      //   $('#modal-take-assigment-failed').modal();
-      // }
     }) // then
     .catch((error) => {
       // display AJAX error msg (can also be a throw from the .then section)
@@ -208,29 +257,6 @@ function onclickTakeIt(e, idxAssignment) {
       console.log(sErrorMsg);
       // elemContainer.innerText = sErrorMsg;
     }); // catch
-
-  // setTimeout(() => {
-  //
-  //   const oAssignment = gaOpenAssignments[idxAssignment];
-  //
-  //
-  //   url = BASE_URL + "?action=" + URL_ACTION_TAKE_ASSIGNMENT;
-  //   url += "&sVolunteer="+document.getElementById("login-name").value;
-  //   url += "&sPatientID="+oAssignment.Patient_ID;
-  //   url += "&sCarePlan="+oAssignment.Care_Plan;
-  //   url += "&sTimestamp="+oAssignment.Timestamp.toISOString();
-  //   console.log("** URL: "+url);
-  //   const success = Math.random() < 0.5;
-  //   if (success) {
-  //     onMenuMyAssignments();
-  //   } else {
-  //     e.target.classList.remove("btn-secondary");
-  //     e.target.classList.add("btn-danger");
-  //     e.target.innerText = "Assignment unavailable ";
-  //     document.getElementById("assignment-failed-error-message").innerText = "Random number generator";
-  //     $('#modal-take-assigment-failed').modal();
-  //   }
-  // }, 500);
 }
 
 /* ==================================================
@@ -278,7 +304,7 @@ function getElemOpenAssignmentDetails(idxAssignment, oAssignment) {
   elemTakeItBtn.classList.add("btn");
   elemTakeItBtn.classList.add("btn-success");
   elemTakeItBtn.innerText = "Yes, I'll take it!";
-  elemTakeItBtn.onclick = (e) => { onclickTakeIt(e, idxAssignment); }
+  elemTakeItBtn.onclick = (e) => { onclickTakeIt(e, idxAssignment); };
 
   elemTakeItRow.appendChild(document.createElement("th")); // blank 1st col
   elemTakeItCol.appendChild(elemTakeItBtn);
@@ -541,7 +567,7 @@ function getOpenAssignments() {
   *  helper to update dtLatViewed in local storage
   *  ************************************************ */
   function updateDtLastViewed() {
-    localStorage.setItem(LOCAL_STORAGE_DATE_VIEWED_OPEN,new Date());
+    localStorage.setItem(LOCAL_STORAGE_DATE_VIEWED_OPEN, new Date());
   }
 
   let sCurrCP = "";
@@ -653,7 +679,7 @@ function onMenuHome() {
 
   // const myModal = document.getElementById("exampleModal");
   // myModal.modal();
-  //$('#exampleModal').modal();
+  // $('#exampleModal').modal();
 }
 
 /* ==================================================
@@ -673,8 +699,8 @@ function onMenuOpenAssignments() {
   // Unhide loading spinner
   document.querySelector("#content--open-assignments .spinner").removeAttribute("hidden");
 
-  const url = BASE_URL + "?action=" + URL_ACTION_GET_OPEN_ASSIGNMENTS;
-  console.log("URL: " + url);
+  const url = `${BASE_URL}?action=${URL_ACTION_GET_OPEN_ASSIGNMENTS}`;
+  console.log(`URL: ${url}`);
 
   // make AJAX call
   axios.get(url)
@@ -733,7 +759,7 @@ function onMenuVolunteerAssignments() {
   let url = `${BASE_URL}?action=${URL_ACTION_VOLUNTEER_ASSIGNMENTS}`;
   url += `&sVolunteer=${document.getElementById("login-name").value}`;
   console.log(`URL: ${url}`);
-  console.log("~~~~~~~~~~~~~~~~~~~~~");
+  console.log("#####################");
   // make AJAX call
   axios.get(url)
     .then((oResponse) => {
@@ -780,7 +806,7 @@ function onMenuVolunteerAssignments() {
 *  @param sVolunteerDocs (doc objects)
 *  @return elem with all the stats setup for display
 * =================================================== */
-function getVolunteerStats(aVolunteerDocs) {
+function getVolunteerStats(aDocs) {
   /* *******************************************************
   * getDurationHours(dtDuration)
   * Helper to get hours from a duraction entered into the docs sheet.
@@ -791,10 +817,27 @@ function getVolunteerStats(aVolunteerDocs) {
   function getDurationHours(dtDuration) {
     return (dtDuration.getTime() / 1000 / 60 / 60) + 613649;
   }
+  /* *******************************************************
+  *  getDateOnly()
+  *  Helper to get just the date for display
+  *  @param dt (Date) - a date
+  * return (string) - "01/06/1998"
+  ******************************************************* */
+  function getDateOnly(dt) {
+    dt = new Date(dt);  // this allows the dt param to be Date or String
+    if (isNaN(dt))
+      return "?";
+    return dt.getMonth()+1 + "/" + dt.getDate() + "/" + dt.getFullYear();
+  }
 
+  const elemContainer = document.createElement('div');
+
+  // SHOW ANNUAL TOTALS
+  // =====================================
+
+  // calculate the annual totals
   const aYearlyTotals = []; // [0]=year 2007 totals, [1]=2008 year totals, etc
-
-  for (const aDoc of aVolunteerDocs) {
+  for (const aDoc of aDocs) {
     const iYear = aDoc["Date of service"].getFullYear();
     let oYearlyTotals = aYearlyTotals[iYear - FIRST_YEAR_OF_DOCS];
     // if no object in this array position yet, create an object for the year
@@ -814,13 +857,106 @@ function getVolunteerStats(aVolunteerDocs) {
     // use Number() or 1st blank  will turn fMiles into string
     oYearlyTotals.fMiles += Number(aDoc.Mileage);
   }
-  const elem = document.createElement('p');
-  let s = "";
-  for (const oYr of aYearlyTotals) {
-    s += `${JSON.stringify(oYr)}<br>`;
+
+  // add a title
+  let elemHeading = document.createElement('H4');
+  elemHeading.classList.add("ml-2", "mt-3", "text-center");
+  elemHeading.innerText = "My Annual Totals";
+  elemContainer.appendChild(elemHeading);
+
+  // create the table to display the totals
+  let elemTable = document.createElement('table');
+  elemTable.classList.add("table", "table-sm", "table-striped");
+  // thead
+  let elemTHead = document.createElement('thead');
+  elemTHead.classList.add("bg-info", "text-light");
+  elemTHead.appendChild(makeRowHeading("Year", "Calls", "Hours", "Miles"));
+  elemTable.appendChild(elemTHead);
+  // tbody
+  let elemTBody = document.createElement('tbody');
+  const oTotals = {
+    iCalls: 0,
+    fHours: 0,
+    fMiles: 0,
+  };
+  for (const oYearStats of aYearlyTotals) {
+    if (oYearStats) { // this is a sparse array, so skip missing years
+      const elemRow = makeRow(
+        oYearStats.iYear,
+        oYearStats.iCalls,
+        oYearStats.fHours.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }),
+        oYearStats.fMiles.toLocaleString(undefined, { maximumFractionDigits: 0 }),
+      );
+      elemTBody.appendChild(elemRow);
+      oTotals.iCalls += oYearStats.iCalls;
+      oTotals.fHours += oYearStats.fHours;
+      oTotals.fMiles += oYearStats.fMiles;
+    }
   }
-  elem.innerHTML = JSON.stringify(s);
-  return elem;
+  elemTable.appendChild(elemTBody);
+  // tfoot
+  const elemTFoot = document.createElement('tfoot');
+  elemTFoot.classList.add("bg-info", "text-light");
+  elemTFoot.appendChild(makeRowHeading("Totals",
+    oTotals.iCalls,
+    oTotals.fHours.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }),
+    oTotals.fMiles.toLocaleString(undefined, { maximumFractionDigits: 0 })));
+  elemTable.appendChild(elemTFoot);
+  // add to the container
+  elemContainer.appendChild(elemTable);
+
+  // SHOW RECENT DOCS
+  // =====================================
+
+  // add a title
+  elemHeading = document.createElement('H4');
+  elemHeading.classList.add("ml-2", "mt-4", "text-center");
+  elemHeading.innerText = "My Recent Docs";
+  elemContainer.appendChild(elemHeading);
+
+  // filter for service date in last 90 days
+  const dt90DaysAgo = new Date(new Date() - 90 * MILLISEC_IN_A_DAY);
+  const aDocs90Days = aDocs.filter(oDoc => dt90DaysAgo <= oDoc["Date of service"]);
+
+  // sort assignments from last 90 days by date
+  aDocs90Days.sort((oDoc1, oDoc2) => {
+    if (oDoc1["Date of service"] < oDoc2["Date of service"])
+      return -1;
+    if (oDoc2["Date of service"] < oDoc1["Date of service"])
+      return 1;
+    return 0;
+  });
+
+  // create the table to display the assignments
+  elemTable = document.createElement('table');
+  elemTable.classList.add("table", "table-sm", "table-striped");
+  // thead
+  elemTHead = document.createElement('thead');
+  elemTHead.classList.add("bg-info", "text-light");
+  elemTHead.appendChild(makeRowHeading("Svc Dt", "Patient", "Care Plan", "Service", "Hrs", "Miles", "Calls"));
+  elemTable.appendChild(elemTHead);
+  // tbody
+  elemTBody = document.createElement('tbody');
+  // rows
+  for (const oDoc of aDocs90Days) {
+    let elemRow = makeRow(
+      getDateOnly(oDoc["Date of service"]),
+      oDoc["Patient name"],
+      oDoc["Care Plan"],
+      oDoc["What did you do?"],
+      getDurationHours(new Date(oDoc["Total time spent"])),
+      oDoc.Mileage,
+      oDoc["Number of calls, if any"],
+    );
+    elemTBody.appendChild(elemRow);
+    elemRow = makeSpanningRow(oDoc["Notes"], 7);
+    elemTBody.appendChild(elemRow);
+  }
+  elemTable.appendChild(elemTBody);
+  // add to the container
+  elemContainer.appendChild(elemTable);
+
+  return elemContainer;
 }
 
 /* ==================================================
@@ -832,7 +968,7 @@ function onMenuVolunteerStats() {
   changeMenuAndContentArea("nav--volunteer-stats", gelemContentVolunteerStats);
 
   // convenience copy of the span to place list of open assignments
-  const elemContainer = document.getElementById("list-volunteer-stats");
+  const elemContainer = document.getElementById("list-volunteer-stats-annual");
   elemContainer.innerText = ""; // clear it from last rendering
 
   // Unhide loading spinner
@@ -844,7 +980,7 @@ function onMenuVolunteerStats() {
   let url = `${BASE_URL}?action=${URL_ACTION_VOLUNTEER_DOCS}`;
   url += `&sVolunteer=${document.getElementById("login-name").value}`;
   console.log(`URL: ${url}`);
-  console.log("~~~~~~~~~~~~~~~~~~~~~");
+  console.log("##################");
   // make AJAX call
   axios.get(url)
     .then((oResponse) => {

@@ -41,7 +41,7 @@
 
         <!-- COLUMN title -->
         <div class="col">
-          <h2 class="mb-2 font-weight-bold">Volunteer<br>Assignments</h3>
+          <h2 id="app-title" class="mb-2 font-weight-bold text-center">Volunteer<br>Assignments</h3>
         </div> <!-- col -->
 
         <!-- COLUMN logo -->
@@ -184,9 +184,27 @@
         <img class="spinner mt-4 mb-2" src="./images/spinner.gif" alt="" hidden>
       </div>
 
-      <!-- ajax data loads here -->
-      <div id="list-volunteer-stats" class="auto-clear">
-        onMenuVolunteerStats() loads this section via ajax...
+      <!-- ajax data loads yearly stats here
+           (via the list-volunteer-stats section) -->
+      <div class="row p-3 d-flex align-items-end">
+        <div class="col-2">
+        </div>
+        <div class="col-8">
+          <div id="list-volunteer-stats-annual" class="auto-clear">
+            onMenuVolunteerStats() loads this section via ajax...
+          </div>
+        </div>
+        <div class="col-2">
+        </div>
+      </div>
+      <!-- ajax data loads list of docs  here
+           (via the list-volunteer-stats section) -->
+      <div class="row p-3 d-flex align-items-end">
+        <div class="col-12">
+          <div id="list-volunteer-stats-docs" class="auto-clear">
+            onMenuVolunteerStats() loads this section via ajax...
+          </div>
+        </div>
       </div>
 
       <!-- Displayed if there are no docs for the volunteer -->

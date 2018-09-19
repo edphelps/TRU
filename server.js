@@ -7,7 +7,10 @@ var SHEET_OPEN   = "Open";
 var SHEET_FILLED = "Filled";
 var SHEET_EMAILS = "Emails";
 
-var ROW_OF_COL_HEADINGS = 1;  // 0-based:  0=title row, 1=column headings 2=first row of actual data THIS IS TRUE FOR ALL SHEETS!!
+var FIRST_YEAR_OF_DOCS = 2007;  // first year for the legacy data of docs
+
+var ROW_OF_COL_HEADINGS = 1;  // Bosrd SS:  0-based:  0=title row, 1=column headings 2=first row of actual data THIS MUST BE TRUE FOR ALL SHEETS IN BOARD SPREADSHEET!!
+var DOCS_ROW_OF_COL_HEADINGS = 0;  // Docs SS: 0-based:  0=column headings 1=first row of actual data
 
 // Sheet 0 and 1 with the assignemnts
 var COL_HIDE         = "Hide";
@@ -19,6 +22,9 @@ var COL_PATIENT_NAME = "Patient_Name";
 var COL_TIMESTAMP    = "Timestamp";
 var COL_TEAM         = "Team";
 
+var COL_DOCS_VOLUNTEER    = "Your name";
+
+
 // Sheet 2 with the Team email addresses
 var COL_EMAIL_TEAM  = "Team";
 var COL_EMAIL_EMAIL = "Email";
@@ -28,6 +34,79 @@ var gaTeamEmailAddresses;  // 2D array of Team names and associated email addres
 
 // show assignnmet details # days from their Timestamp (when they were listed)
 var NUM_DAYS_TO_SHOW_ASSIGNMENTS = 90;
+
+/*******************************************************
+* getDurationHours(dtDuration)
+*
+* Helper to get hours from a duraction entered into the docs sheet.
+*
+* param (date) dtDuration - a date for a duration.  These start on 12/30/1899 00:00:00 for some reason.
+*
+* return (float) - number of decimal hours represented by the duration
+********************************************************/
+function getDurationHours(dtDuration) {
+  return (dtDuration.getTime() / 1000 / 60 / 60) + 613649;
+}
+
+/*******************************************************
+* Get Volunteer Docs
+*
+* @param {string} sVolunteer - req'd: name of volunteer, ex: "Tom Genovese"
+* @return (
+*              aDocs       : {[] of {   all docs for volunteer during time period
+*                               DateOfService : {date}
+*                               CarePlan      : {string}
+*                               Actions       : {string}
+*                               NumCalls      : {integer}
+*                               TotalTime     : {float}
+*                               Mileage       : {float}
+*                            }
+*         }
+********************************************************/
+function getVolunteerDocs(sVolunteer) {
+  Logger.log("getVolunteerDocs() start");
+
+
+  // get the data in the range as a 2D array
+  var spreadsheet = SpreadsheetApp.openById('15btb4N3g8xv2UBBGwwOBT55TiJJ2q8uKVeo1cLtThtw');
+  var rangeAllDocs = spreadsheet.getSheets()[0].getDataRange();
+  var aAllDocs = rangeAllDocs.getValues()
+
+  Logger.log("aAllDocs.length: " + aAllDocs.length);
+
+  var aYearlyTotals = [];  // [0]=year 2007 totals, [1]=2008 year totals, etc
+
+  // load aColumnHeadings
+  var aColumnHeadings = [];
+  for (var i=0;i<aAllDocs[DOCS_ROW_OF_COL_HEADINGS].length;i++)
+    aColumnHeadings[i]=aAllDocs[DOCS_ROW_OF_COL_HEADINGS][i];
+
+  var IDX_VOLUNTEER    = aColumnHeadings.indexOf(COL_DOCS_VOLUNTEER);
+  Logger.log("IDX_VOLUNTEER: "+IDX_VOLUNTEER);
+
+  sVolunteer = sVolunteer.trim();
+  var sVolunteer_lc = sVolunteer.toLowerCase();
+
+  // filter data for docs for sVolunteer
+/*  var aVolDocs = aAllDocs.filter( function(oDoc) {
+    // return the filter t/f
+    return oDoc[IDX_VOLUNTEER].toLowerCase().trim() === sVolunteer_lc;
+  }); */
+  var aVolDocs = [];
+  var idxVolDocs = -1;
+  //for (var oDoc in aAllDocs) {
+  for (var i=ROW_OF_COL_HEADINGS+1;i<aAllDocs.length;i++) { // index starts at ROW_OF_COL_HEADINGS+1 to skip the row of columns heading
+    if (aAllDocs[i][IDX_VOLUNTEER].toLowerCase().trim() === sVolunteer_lc) {
+      // add the doc object to array
+      aVolDocs[++idxVolDocs] = {};  // add blank object to array
+      for (var j=0;j<aColumnHeadings.length;j++)  // add properties based on the column headings
+        aVolDocs[idxVolDocs][aColumnHeadings[j]] = aAllDocs[i][j];
+    }
+  }
+  Logger.log("# of docs being returned: "+aVolDocs.length);
+  Logger.log("getVolunteerDocs() end");
+  return JSON.stringify(aVolDocs);
+};
 
 /*=========================================================
 *  getVolunteerAssignments()
@@ -253,7 +332,7 @@ https://script.google.com/a/trucare.org/macros/s/AKfycbxoYDVdKuD5L6iigoDBG-iOwvM
 *    ?action=getVolunteerAssignments, get all assignments for a volunteer
 *        param: sVolunteer
 *
-*    ?action=getVolsSummary. get summary of volunteer's docs for optional date range
+*    ?action=getVolunteerDocs, get summary of volunteer's docs for optional date range
 *        params: sVolunteer, [sStart], [sEnd]
 ==========================================================*/
 function doGet(e) {
@@ -284,6 +363,11 @@ function doGet(e) {
        Logger.log("-----");
        result = getVolunteerAssignments(e.parameter.sVolunteer);
        break;
+    case "getVolunteerDocs":
+       Logger.log("ACTION: getVolunteerDocs --------------------");
+       Logger.log("-----");
+       result = getVolunteerDocs(e.parameter.sVolunteer);
+       break;
     default:
        Logger.log("ACTION: takeAssignment --------------------");
        result = {};
@@ -293,38 +377,6 @@ function doGet(e) {
   // DOUBLE wrap with JSON.stringify() b/c axios does one unwrap and we want to able to provide a reviver for JSON.parse() for the list of open assignments
   return ContentService.createTextOutput(JSON.stringify(result));
 }
-
-/*
-WORKING FOR getOpenAssignments at 4pm
-function doGet(e) {
-  Logger.log("doGet() version 2");
-  Logger.log(e);
-  Logger.log("-----------------------------");
-
-  var result = "";
-  switch (e.parameter.action) {
-    case "getOpenAssignments":
-       Logger.log("ACTION: getOpenAssignments --------------------");
-       Logger.log("-----");
-       result = getOpenAssignments();
-       break;
-    case "takeAssignment":
-       Logger.log("ACTION: takeAssignment --------------------");
-       Logger.log("-----");
-       const oAssignmentRequest = {};
-       oAssignmentRequest.sVolunteer = e.parameter.sVolunteer;
-       oAssignmentRequest.sPatientID = e.parameter.sPatientID;
-       oAssignmentRequest.sCarePlan = e.parameter.sCarePlan;
-       oAssignmentRequest.sTimestamp = e.parameter.sTimestamp;
-       result = processAssignmentRequest(oAssignmentRequest);
-       Logger.log(">>>> result: "+result);
-       break;
-    default:
-       result = { errorMessage: "ERROR: unknown/missing action parameter in GAS doGet(): ?action="+e.parameter.action };
-  }
-
-  return ContentService.createTextOutput(JSON.stringify(result));
-}*/
 
 /*=========================================================
 *  Email assignment information to team

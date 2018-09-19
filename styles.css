@@ -16,18 +16,19 @@
   width: 100px;
 }
 
-/* waiting spinner during ajax calls */
+/* spinner shown while waitnig for ajax calls */
 .spinner {
   width: 100px;
   height: 100px;
   text-align: center;
 }
 
-h2 {
+/* "Volunteer Assignments" title in banner */
+#app-title {
   color: black;
 
-
-  text-shadow: 0 0 10px #fff,
+  text-shadow:
+  0 0 10px #fff,
   0 0 20px #fff,
   0 0 30px #fff,
   0 0 40px #fff,
@@ -56,12 +57,12 @@ h2 {
 *  LOGIN FORM
 ******************************************** */
 
-input {
+ #login-fieldset input {
   border-radius: 5px;
   width: 180px;
   margin-left: 2px;
 }
-::placeholder {
+ #login-fieldset ::placeholder {
     color: grey;
     opacity: 0.5;
 }
@@ -98,44 +99,50 @@ fieldset {
 *  PAGE CONTENT AREA
 ******************************************** */
 
+/* content area below the menu bar */
 .content {
   background-color: lavender;
   padding: 15px;
 }
 
+/* Marker for divs that are filled in by ajax.
+   When changing to another menu all divs with this class are set to "".
+   This prevents the problem of the card accordians shadowing each other's
+   ID names sine the all use "accordion" and set the assignment id's with
+   the same naming covnetion. */
 .auto-clear {
-  /* class used as a marker for divs that are filled in by ajax */
-  /* when changing to another menu all divs with this class are set to "" */
+   /* intentionally blank */
 }
 
 /* *****************************************
 *  TABLE TO DISPLAY ASSIGNMENT DETAILS
 ******************************************** */
-  /* border: solid;   NOT WORKING, WON'T USE RADIUS ON THE BS CARDS  */
-table {
+
+#accordion table {
   border-radius:   20px;
   border-spacing:  0;
   border-width:    2px;
   box-shadow:      0 0 20px 3px #777777;
   background: #FDEBD0;
   padding: 15px;
+  /* border: solid;   NOT WORKING, WON'T USE RADIUS ON THE BS CARDS  */
   /* #DCEDC8; */
   /* #FEF5E7; */
   /* #FAD7A0; */
 }
 
-td, tr, th {
+#accordion td, #accordion tr, #accordion th {
   border-width: 0px;
   padding:      6px;
 }
 
-td {
+#accordion td {
   vertical-align: top;
   padding-right: 12px;
   /* want a little more space on the right */
 }
 
-th {
+#accordion th {
   /* sections headings for the assignment details */
   vertical-align: top;
   font-weight:    bold;
@@ -144,6 +151,10 @@ th {
   /* want a little more space on the left */
 }
 
+/* right justify all the table entries in this section */
+#list-volunteer-stats-annual th, #list-volunteer-stats-annual tr {
+  text-align: right;
+}
 /* *****************************************
 *  COLLAPSING LISTS TO VIEW ASSIGNMENTS (Open and My)
 ******************************************** */
