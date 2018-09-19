@@ -1,30 +1,27 @@
-TRU Care Volunteer Assigment Site
-=================================
+# TRU Care Volunteer Assigment Site
 
-=====================================================
-Overview
-=====================================================
+# Overview
 
 This site allows TRU Care volunteers to:
-  -- view available volunteer assignments
-  -- take a volunteer assignment
-  -- view the details (phone, address, etc) for their assignments
-  -- view a summary of their volunteer history (hours and miles by year)
-  -- view the documentation of their patient visits they've submitted in the past 90 days  
+* view available volunteer assignments
+* take a volunteer assignment
+* view the details (phone, address, etc) for their assignments
+* view a summary of their volunteer history (hours and miles by year)
+* view the documentation of their patient visits they've submitted in the past 90 days  
 
 The site links to:
-  -- the volunteer's "home" page, administered via Google Sites
-  -- the Google Form that allows volunteers to submit documentation of their patient visit
+* the volunteer's "home" page, administered via Google Sites
+* the Google Form that allows volunteers to submit documentation of their patient visit
 
-
-=====================================================
-Login
-=====================================================
+# Login
 
 A single password is used for all users and is currently hard-coded into the
 app.  Application saves login information to local storage.
 
+## invalid login
 ![Example](screenshots/login-invalid.png)
+
+## valid login
 ![Example](screenshots/login-valid.png)
 
 =====================================================
