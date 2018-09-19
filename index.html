@@ -185,7 +185,7 @@
       </div>
 
       <!-- ajax data loads yearly stats here
-           (via the list-volunteer-stats section) -->
+           (in the list-volunteer-stats-annual section) -->
       <div class="row p-3 d-flex align-items-end">
         <div class="col-2">
         </div>
@@ -197,19 +197,21 @@
         <div class="col-2">
         </div>
       </div>
-      <!-- ajax data loads list of docs  here
-           (via the list-volunteer-stats section) -->
+
+
+      <!-- Displayed if there are no docs for the volunteer -->
+      <div id="volunteer-has-no-docs" hidden>
+        <h1 class="text-center mt-4">You have no docs to list</h1>
+      </div>
+
+      <!-- ajax data loads list of docs here
+           (in the list-volunteer-stats-docs section) -->
       <div class="row p-3 d-flex align-items-end">
         <div class="col-12">
           <div id="list-volunteer-stats-docs" class="auto-clear">
             onMenuVolunteerStats() loads this section via ajax...
           </div>
         </div>
-      </div>
-
-      <!-- Displayed if there are no docs for the volunteer -->
-      <div id="volunteer-has-no-docs" hidden>
-        <h1 class="text-center mt-4">You have no docs to list</h1>
       </div>
 
       <!-- Give some space to match other pages -->
