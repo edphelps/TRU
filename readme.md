@@ -1,25 +1,41 @@
-TRU Care Volunteer Website
+TRU Care Volunteer Assigment Site
+=================================
+
+=====================================================
+Overview
+=====================================================
+
+This site allows TRU Care volunteers to:
+  -- view available volunteer assignments
+  -- take a volunteer assignment
+  -- view the details (phone, address, etc) for their assignments
+  -- view a summary of their volunteer history (hours and miles by year)
+  -- view the documentation of their patient visits they've submitted in the past 90 days  
+
+The site links to:
+  -- the volunteer's "home" page, administered via Google Sites
+  -- the Google Form that allows volunteers to submit documentation of their patient visit
+
 
 =====================================================
 Login
 =====================================================
 
-Application saves login information to local storage and is retrieved and
-re-validated when app loads.  Validation is performed as the user types.
+A single password is used for all users and is currently hard-coded into the
+app.  Application saves login information to local storage.
 
-A single password is used for everyone and is currently hard-coded into the
-app.  Todo: add an ajax call to get the current password.  This creates some
-timing conditions, but ok to have the state show the user is unauthorized
-until the universal password is received.  Todo: create a place in the
-Google spreadsheets to maintain the password.
-
+![Example](screenshots/login-invalid.png)
+![Example](screenshots/login-valid.png)
 
 =====================================================
 Data
 =====================================================
 
-Data is accessed from a Google Apps Script API that maintains spreadsheets
-of assignments (open and assigned) and the 'docs' submitted by volunteers.
+Data is accessed via a Google Apps Script API that maintains a spreadsheet
+of assignments (open and assigned) and another spreadsheet with the 'docs'
+submitted by volunteers.
 
-The RESTful API has the following methods:
--- todo: fill in
+The code for this is in server.js and designed to run as a Google Apps Scripts
+project.
+
+Data is maintained by the edphelps@trucare.org Google account.

@@ -74,8 +74,6 @@ function getVolunteerDocs(sVolunteer) {
 
   Logger.log("aAllDocs.length: " + aAllDocs.length);
 
-  var aYearlyTotals = [];  // [0]=year 2007 totals, [1]=2008 year totals, etc
-
   // load aColumnHeadings
   var aColumnHeadings = [];
   for (var i=0;i<aAllDocs[DOCS_ROW_OF_COL_HEADINGS].length;i++)

@@ -149,10 +149,17 @@ function makeRowHeading(...sThs) {
 function makeSpanningRow(sTd, iColsToSpan) {
   // console.log("iColsToSpan: "+iColsToSpan);
   const elemRow = document.createElement("tr");
-  const elemColTd = document.createElement("td");
+
+  // kludge: add a blank first column isn't what this function should do
+  //         It's doing it for the one function calling this to show doc Notes
+  //         Todo: Need to generalize this.
+  let elemColTd = document.createElement("td");
+  elemRow.appendChild(elemColTd);
+
+  elemColTd = document.createElement("td");
   elemColTd.classList.add("text-left");
   elemColTd.innerHTML = sTd; // need this for elements that use addHtmlBr()
-  elemColTd.setAttribute("colspan", iColsToSpan.toString());
+  elemColTd.setAttribute("colspan", (iColsToSpan - 1).toString());
   elemRow.appendChild(elemColTd);
   return elemRow;
 }
@@ -837,7 +844,7 @@ function getVolunteerStatsDocs(aDocs) {
   const dt90DaysAgo = new Date(new Date() - 90 * MILLISEC_IN_A_DAY);
   const aDocs90Days = aDocs.filter(oDoc => dt90DaysAgo <= oDoc["Date of service"]);
 
-  // sort assignments from last 90 days by date of service 
+  // sort assignments from last 90 days by date of service
   aDocs90Days.sort((oDoc1, oDoc2) => {
     if (oDoc1["Date of service"] < oDoc2["Date of service"])
       return -1;
