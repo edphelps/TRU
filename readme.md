@@ -12,7 +12,7 @@ This site allows TRU Care volunteers to:
 
 The site links to:
 * the volunteer's "home" page, administered via Google Sites
-* a Google Form for volunteers to submit documentation of their patient visit
+* a Google Form for volunteers to submit documentation of their patient visits
 
 
 # Login
@@ -85,5 +85,3 @@ project on their servers.
 
 Data is maintained and server.js is executed in the context of the e
 dphelps@trucare.org Google account.
-
-Banner from http://301stockinvesting.com/05/2018/abstract-banner-vector-png/banner
