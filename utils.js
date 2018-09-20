@@ -12,7 +12,7 @@
 *  areas will be hidden.
 *
 *  Note: checks gUserValidated and redirects back to login
-*        content if user not validated
+*        content if user hasn't been validated
 *
 *  @param sMenuBtnID (string) ID for the menu button so it can be selected
 *  @param elemConten (html element) the content area to unhide.
@@ -27,6 +27,7 @@ function changeMenuAndContentArea(sMenuBtnID, elemContent) {
 
   // remove the dynamic AJAX content from each 'page', otherwise
   // the generated element IDs start to conflict in the accordion lists
+  // on different 'pages'
   const aElemAutoClear = document.querySelectorAll(".auto-clear");
   for (const elem of aElemAutoClear) {
     elem.innerHTML = "";
@@ -87,7 +88,6 @@ function redactNames(sText) {
 * =================================================== */
 function addHtmlBr(sText) {
   return sText.replace(/\n/g, '<br>');
-  // return sText.replace("\n", '<br><br>');  // ERROR, only replacing the first one
 }
 
 /* ==================================================
@@ -106,35 +106,6 @@ function makeRowHeading(...sThs) {
     elemColTh.innerHTML = sTh; // need this for elements that use addHtmlBr()
     elemRow.appendChild(elemColTh);
   }
-  return elemRow;
-}
-
-
-/* ==================================================
-*  makeSpanningRow()
-*
-*  Create a row element that spans all columns in the table
-*  Todo: move this into the one module that uses it, it's not a global util
-*
-*  @param sTd (string) the text
-*  @param iColsToSpan (int) the number of columns to span
-*  @return the row element
-* =================================================== */
-function makeSpanningRow(sTd, iColsToSpan) {
-  // console.log("iColsToSpan: "+iColsToSpan);
-  const elemRow = document.createElement("tr");
-
-  // kludge: add a blank first column isn't what this function should do
-  //         It's doing it for the one function calling this to show doc Notes
-  //         Todo: Need to generalize this.
-  let elemColTd = document.createElement("td");
-  elemRow.appendChild(elemColTd);
-
-  elemColTd = document.createElement("td");
-  elemColTd.classList.add("text-left");
-  elemColTd.innerHTML = sTd; // need this for elements that use addHtmlBr()
-  elemColTd.setAttribute("colspan", (iColsToSpan - 1).toString());
-  elemRow.appendChild(elemColTd);
   return elemRow;
 }
 

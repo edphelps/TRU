@@ -15,10 +15,11 @@ The site links to:
 * a Google Form for volunteers to submit documentation of their patient visits
 
 
-# Login
+# Login process
 
 A single password is used for all users and is currently hard-coded into the
-app.  Application saves login information to local storage.
+app.  Application saves login information to local storage.  Menu is disabled
+and a dummy page is displayed until login is completed.
 
 ### invalid login
 ![Example](screenshots/login-invalid.png)
@@ -29,10 +30,10 @@ app.  Application saves login information to local storage.
 
 # Open Assignments page
 
-Lists assignments grouped by care plan and then in reverse date order of when
+Lists assignments grouped by Care Plan and then in reverse date order of when
 they were posted.  Badges highlight:
-* new assignments (posted since the last time the user viewed this page, app
-  stores the last viewed time in local storage)
+* new assignments posted since the last time the user viewed this page (app
+  stores the last viewed date/time in local storage)
 * assignments posted > 7 days ago
 * assignments posted > 14 days ago  
 
@@ -44,7 +45,7 @@ assignment with names redacted (they appears as "#name#" in the text).
 
 At the bottom of the assignment details is a button to take the assignment.
 
-### take-it button
+### "take it" button
 ![Example](screenshots/take-it-btn.png)
 
 When a user clicks to take an assignment the button changes to a wait message
@@ -63,20 +64,22 @@ If there is a problema modal is displayed and the button changes to
 ![ExampleÎ](screenshots/take-it-failed-btn.png)
 
 
-# My assignments page
+# My Assignments page
 
-Lists the volunteers active assignments.  The volunteer coordinators can remove
+Lists the volunteer's active assignments.  The volunteer coordinators can remove
 or hide assignments from the spreadsheet containing the assignments.  This page
-functions similiarly to the open assignments page, allowing the user to click
+functions similarly to the open assignments page, allowing the user to click
 an assignment to see the details.  On this page more information on the
-assignment is shown, including names, phone numbers, etc.
+assignment is shown (including names, phone numbers, etc).
 
+### assignments page
 ![ExampleÎ](screenshots/my-assignments.png)
 
-# My stats page
+# My Stats page
 
 Lists annual totals and the docs volunteer has submitted in the last 90 days.
 
+### my stats page
 ![ExampleÎ](screenshots/my-stats.png)
 
 
