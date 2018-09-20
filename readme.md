@@ -73,6 +73,12 @@ assignment is shown, including names, phone numbers, etc.
 
 ![ExampleÎ](screenshots/my-assignments.png)
 
+# My stats page
+
+Lists annual totals and the docs volunteer has submitted in the last 90 days.
+
+![ExampleÎ](screenshots/my-stats.png)
+
 
 # Data
 
