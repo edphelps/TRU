@@ -3,6 +3,23 @@
 */
 
 /* ==================================================
+*  cancelPendingAjaxLoad()
+*
+*  Called by a page before it launches an AJAX request for data.  This
+*  is important to prevent user from clicking the menu selection for the
+*  page multuple times OR movine from one page to another while the first
+*  page is still loading (we wouldn't want the first page to start loading
+*  the DOM when its AJAX call returned while the user is viewing the 2nd page).
+* =================================================== */
+function cancelPendingAjaxLoad() {
+  if (goCancelAjax) {
+    console.log("Cancelling current AJAX call");
+    goCancelAjax.cancel();
+    goCancelAjax = null;
+  }
+}
+
+/* ==================================================
 *  changeMenuAndContentArea()
 *
 *  Menu choice onClick event handers call this function to
@@ -77,6 +94,39 @@ function dateReviver(key, value) {
 function redactNames(sText) {
   return sText.replace(new RegExp(/(~\w+)/gi), "#name#"); // replace "~" and following word with "----"
 }
+
+/* ==================================================
+*  hasLocalStorageSupport()
+*
+*  Checks is localStorage is supported, which it's not in Safari
+*
+*  @return t/f
+* =================================================== */
+function hasLocalStorageSupport() {
+  let bLocalStorageSupport = false;
+  try {
+    const testKey = 'safari-issue';
+    localStorage.setItem(testKey, 'foo');
+    localStorage.removeItem(testKey);
+    bLocalStorageSupport = true;
+  } catch (e) {
+    bLocalStorageSupport = false;
+  }
+  return bLocalStorageSupport;
+}
+
+/* ==================================================
+*  unredactNames()
+*
+*  Remove the '~' used to flag names to be redacted.
+*
+*  @param sText (string) string that includes ~'s
+*  @return new string that's had the '~'s removed.
+* =================================================== */
+function unredactNames(sText) {
+  return sText.replace(new RegExp(/(~)/gi), ""); // replace "~" with nothing
+}
+
 
 /* ==================================================
 *  addHtmlBr()

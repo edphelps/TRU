@@ -241,7 +241,10 @@ function onMenuVolunteerStats() {
   console.log(`URL: ${url}`);
   console.log("##################");
   // make AJAX call
-  axios.get(url)
+
+  cancelPendingAjaxLoad(); // looks at goCancelAjax
+  goCancelAjax = axios.CancelToken.source();
+  axios.get(url, { cancelToken: goCancelAjax.token })
     .then((oResponse) => {
       console.log("-- ajax call responded --");
       // Parse the returned JSON into an array of assignments
@@ -267,12 +270,16 @@ function onMenuVolunteerStats() {
 
     }) // then
     .catch((error) => {
-      // display AJAX error msg (can also be a throw from the .then section)
-      console.log("-- error --");
-      console.log(`${error}`);
-      const sErrorMsg = JSON.stringify(error);
-      console.log(sErrorMsg);
-      elemContainerAnnual.innerText = sErrorMsg;
-      debugger;
+      // if not due to a call to goCancelAjax.cancel()
+      if (error.toString()!=="Cancel") {
+        // display AJAX error msg (can also be a throw from the .then section)
+        console.log("-- AJAX error --");
+        console.log(error);
+        console.log(`${error}`);
+        const sErrorMsg = JSON.stringify(error);
+        console.log(sErrorMsg);
+        elemContainer.innerText = `An error occured: ${sErrorMsg}`;
+        debugger;
+      }
     }); // catch
 }

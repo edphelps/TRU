@@ -86,8 +86,10 @@ function onkeyupLogin() {
   const elemFieldsetLogin = document.getElementById("login-fieldset");
 
   // save values to local storage
-  localStorage.setItem(LOCAL_STORAGE_LOGIN_NAME, sName);
-  localStorage.setItem(LOCAL_STORAGE_LOGIN_PSWD, sPassword);
+  if (hasLocalStorageSupport()) {
+    localStorage.setItem(LOCAL_STORAGE_LOGIN_NAME, sName);
+    localStorage.setItem(LOCAL_STORAGE_LOGIN_PSWD, sPassword);
+  }
 
   // valid
   if (sName.length && sPassword === gPASSWORD) {
@@ -116,12 +118,15 @@ function onkeyupLogin() {
 * =================================================== */
 function initUserValidation() {
 
-  const sName = localStorage.getItem(LOCAL_STORAGE_LOGIN_NAME) || "";
-  const sPswd = localStorage.getItem(LOCAL_STORAGE_LOGIN_PSWD) || "";
+  console.log("localStorage = "+hasLocalStorageSupport());
 
-  document.getElementById("login-name").value = sName;
-  document.getElementById("login-password").value = sPswd;
+  if (hasLocalStorageSupport()) {
+    const sName = localStorage.getItem(LOCAL_STORAGE_LOGIN_NAME) || "";
+    const sPswd = localStorage.getItem(LOCAL_STORAGE_LOGIN_PSWD) || "";
 
+    document.getElementById("login-name").value = sName;
+    document.getElementById("login-password").value = sPswd;
+  }
   // validate user
   onkeyupLogin();
 }

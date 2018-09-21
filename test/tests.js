@@ -8,6 +8,12 @@ describe("utils.js", () => {
     });
   });
 
+  describe('unredactNames', () => {
+    it("it should remove tildes from string", () => {
+      expect(unredactNames("~George ran into ~Sue with ~Tom")).to.equal("George ran into Sue with Tom");
+    });
+  });
+
   describe('addHtmlBr()', () => {
     it('replace \\n with <br>', () => {
       expect(addHtmlBr("\nTest\n\nthis\nstring\n")).to.equal("<br>Test<br><br>this<br>string<br>");

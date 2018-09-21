@@ -33,7 +33,9 @@ function onclickTakeIt(e, idxAssignment) {
   console.log(`** URL: ${url}`);
 
   // make AJAX call
-  axios.get(url)
+  cancelPendingAjaxLoad(); // looks at goCancelAjax
+  goCancelAjax = axios.CancelToken.source();
+  axios.get(url, { cancelToken: goCancelAjax.token })
     .then((oResponse) => {
       console.log("-- ajax call responded --");
       const oMessage = JSON.parse(oResponse.data);
@@ -52,12 +54,17 @@ function onclickTakeIt(e, idxAssignment) {
       }
     }) // then
     .catch((error) => {
-      // display AJAX error msg (can also be a throw from the .then section)
-      console.log("-- error --");
-      console.log(`${error}`);
-      const sErrorMsg = JSON.stringify(error);
-      console.log(sErrorMsg);
-      // elemContainer.innerText = sErrorMsg;
+      // if not due to a call to goCancelAjax.cancel()
+      if (error.toString()!=="Cancel") {
+        // display AJAX error msg (can also be a throw from the .then section)
+        console.log("-- AJAX error --");
+        console.log(error);
+        console.log(`${error}`);
+        const sErrorMsg = JSON.stringify(error);
+        console.log(sErrorMsg);
+        elemContainer.innerText = `An error occured: ${sErrorMsg}`;
+        debugger;
+      }
     }); // catch
 }
 
@@ -242,9 +249,9 @@ function getOpenAssignments() {
   *  ************************************************ */
   function getDtLastViewed() {
     // get date last viewed or set to a year ago
-    let dtLastViewed = localStorage.getItem(LOCAL_STORAGE_DATE_VIEWED_OPEN);
+    let dtLastViewed = (hasLocalStorageSupport()) ? localStorage.getItem(LOCAL_STORAGE_DATE_VIEWED_OPEN) : null;
     if (!dtLastViewed) {
-      dtLastViewed = new Date(new Date() - MILLISEC_IN_A_DAY * 365);
+      dtLastViewed = new Date(new Date() - MILLISEC_IN_A_DAY * 5);
     } else {
       dtLastViewed = new Date(dtLastViewed); // convert string to
     }
@@ -257,7 +264,8 @@ function getOpenAssignments() {
   *  helper to update dtLatViewed in local storage
   *  ************************************************ */
   function updateDtLastViewed() {
-    localStorage.setItem(LOCAL_STORAGE_DATE_VIEWED_OPEN, new Date());
+    if (hasLocalStorageSupport())
+      localStorage.setItem(LOCAL_STORAGE_DATE_VIEWED_OPEN, new Date());
   }
 
   let sCurrCP = "";
@@ -317,8 +325,9 @@ function onMenuOpenAssignments() {
   const url = `${BASE_URL}?action=${URL_ACTION_GET_OPEN_ASSIGNMENTS}`;
   console.log(`URL: ${url}`);
 
-  // make AJAX call
-  axios.get(url)
+  cancelPendingAjaxLoad(); // looks at goCancelAjax
+  goCancelAjax = axios.CancelToken.source();
+  axios.get(url, { cancelToken: goCancelAjax.token })
     .then((oResponse) => {
       console.log("-- response successful --");
       // Parse the returned JSON into an array of assignments
@@ -342,12 +351,16 @@ function onMenuOpenAssignments() {
 
     }) // then
     .catch((error) => {
-      // display AJAX error msg (can also be a throw from the .then section)
-      console.log("-- error --");
-      console.log(`${error}`);
-      const sErrorMsg = JSON.stringify(error);
-      console.log(sErrorMsg);
-      elemContainer.innerText = sErrorMsg;
-      debugger;
+      // if not due to a call to goCancelAjax.cancel()
+      if (error.toString()!=="Cancel") {
+        // display AJAX error msg (can also be a throw from the .then section)
+        console.log("-- AJAX error --");
+        console.log(error);
+        console.log(`${error}`);
+        const sErrorMsg = JSON.stringify(error);
+        console.log(sErrorMsg);
+        elemContainer.innerText = `An error occured: ${sErrorMsg}`;
+        debugger;
+      }
     }); // catch
 }

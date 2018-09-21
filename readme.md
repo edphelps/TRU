@@ -83,6 +83,11 @@ Lists annual totals and the docs volunteer has submitted in the last 90 days.
 ![ExampleÎ](screenshots/my-stats.png)
 
 
+# Axios details
+
+All calls to axios/ajax set a 
+
+
 # Data
 
 Data is accessed via a Google Apps Script API that maintains a spreadsheet

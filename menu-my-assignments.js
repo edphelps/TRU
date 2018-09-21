@@ -2,9 +2,7 @@
    My Assignments page
 */
 
-
 const URL_ACTION_VOLUNTEER_ASSIGNMENTS = "getVolunteerAssignments";
-
 
 /* ==================================================
 *  getElemVolAssignmentDetails()
@@ -16,7 +14,7 @@ function getElemVolAssignmentDetails(idxAssignment, oAssignment) {
 
   // ADD DATA ROWS
   elemTable.appendChild(makeRow("Stats", `${oAssignment.Age}yo ${oAssignment.Gender} with ${oAssignment.Diagnosis}`));
-  elemTable.appendChild(makeRow("Request", `${oAssignment.Care_Plan}: ${addHtmlBr(oAssignment.Request)}`));
+  elemTable.appendChild(makeRow("Request", `${oAssignment.Care_Plan}: ${addHtmlBr(unredactNames(oAssignment.Request))}`));
   elemTable.appendChild(makeRow("Location", `${oAssignment.Home_or_Facility}`));
   elemTable.appendChild(makeRow("Address", `${addHtmlBr(oAssignment.Address)}`));
   elemTable.appendChild(makeRow("Phone", `${oAssignment.Phone}`));
@@ -26,11 +24,10 @@ function getElemVolAssignmentDetails(idxAssignment, oAssignment) {
   elemTable.appendChild(makeRow("Direction", `${oAssignment.Directive}`));
   elemTable.appendChild(makeRow("Religion", `${oAssignment.Religion}`));
   elemTable.appendChild(makeRow("Military", `${oAssignment.Military}`));
-  elemTable.appendChild(makeRow("Story", `${addHtmlBr(oAssignment.Psychosocial)}`));
+  elemTable.appendChild(makeRow("Story", `${addHtmlBr(unredactNames(oAssignment.Psychosocial))}`));
 
   return elemTable;
 }
-
 
 /* ==================================================
 *  function getElemVolAssignment()
@@ -163,8 +160,11 @@ function onMenuVolunteerAssignments() {
   url += `&sVolunteer=${document.getElementById("login-name").value}`;
   console.log(`URL: ${url}`);
   console.log("#####################");
+
   // make AJAX call
-  axios.get(url)
+  cancelPendingAjaxLoad(); // looks at goCancelAjax
+  goCancelAjax = axios.CancelToken.source();
+  axios.get(url, { cancelToken: goCancelAjax.token })
     .then((oResponse) => {
       console.log("-- ajax call responded --");
       // Parse the returned JSON into an array of assignments
@@ -193,12 +193,16 @@ function onMenuVolunteerAssignments() {
 
     }) // then
     .catch((error) => {
-      // display AJAX error msg (can also be a throw from the .then section)
-      console.log("-- error --");
-      console.log(`${error}`);
-      const sErrorMsg = JSON.stringify(error);
-      console.log(sErrorMsg);
-      elemContainer.innerText = sErrorMsg;
-      debugger;
+      // if not due to a call to goCancelAjax.cancel()
+      if (error.toString()!=="Cancel") {
+        // display AJAX error msg (can also be a throw from the .then section)
+        console.log("-- AJAX error --");
+        console.log(error);
+        console.log(`${error}`);
+        const sErrorMsg = JSON.stringify(error);
+        console.log(sErrorMsg);
+        elemContainer.innerText = `An error occured: ${sErrorMsg}`;
+        debugger;
+      }
     }); // catch
 }
