@@ -14,6 +14,7 @@
 ***************************************************************************** */
 
 const URL_ACTION_VOLUNTEER_DOCS = "getVolunteerDocs";
+const URL_ACTION_GET_PASSWORD = "getPassword";
 
 const LOCAL_STORAGE_LOGIN_NAME = "login-name";
 const LOCAL_STORAGE_LOGIN_PSWD = "login-pswd";
@@ -25,7 +26,7 @@ let gelemContentHome = null;
 let gelemContentVolunteerStats = null;
 
 // user validation
-const gPASSWORD = "2212";
+let gPASSWORD = "unk"; // will be loaded via AJAX
 
 
 /* *****************************************************************************
@@ -108,6 +109,43 @@ function onkeyupLogin() {
 }
 
 /* ==================================================
+*  loadPassword()
+*
+*  AJAX call to get password from server.  Call onkeyupLogin() when loaded.
+* =================================================== */
+function loadPassword() {
+  let url = `${BASE_URL}?action=${URL_ACTION_GET_PASSWORD}`;
+  console.log(`URL: ${url}`);
+  console.log("##################");
+  // make AJAX call
+  cancelPendingAjaxLoad(); // looks at goCancelAjax
+  goCancelAjax = axios.CancelToken.source();
+  axios.get(url, { cancelToken: goCancelAjax.token })
+    .then((oResponse) => {
+      goCancelAjax = null;
+      console.log("-- ajax call responded --");
+      // Parse the returned JSON into a string
+      // The data from API was double JSON.stringified() since axios does one
+      // round of JSON.parse() for us.  We want to JSON.parse() ourselves to be
+      // able to apply the date reviver in other parts of the application.
+      gPASSWORD = JSON.parse(oResponse.data);
+      console.log(`password loaded: ${gPASSWORD}`);
+      console.log(gPASSWORD);
+      console.log(oResponse.data);
+      onkeyupLogin(); // cause a re-evalidation of user login credentials
+    }) // then
+    .catch((error) => {
+      // display AJAX error msg (can also be a throw from the .then section)
+      console.log("-- AJAX error --");
+      console.log(error);
+      console.log(`${error}`);
+      const sErrorMsg = JSON.stringify(error);
+      console.log(sErrorMsg);
+      debugger;
+    }); // catch
+}
+
+/* ==================================================
 *  initUserValidation()
 *
 *  Tasks:
@@ -118,7 +156,7 @@ function onkeyupLogin() {
 * =================================================== */
 function initUserValidation() {
 
-  console.log("localStorage = "+hasLocalStorageSupport());
+  loadPassword();
 
   if (hasLocalStorageSupport()) {
     const sName = localStorage.getItem(LOCAL_STORAGE_LOGIN_NAME) || "";

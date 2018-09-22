@@ -37,6 +37,7 @@ function onclickTakeIt(e, idxAssignment) {
   goCancelAjax = axios.CancelToken.source();
   axios.get(url, { cancelToken: goCancelAjax.token })
     .then((oResponse) => {
+      goCancelAjax = null;
       console.log("-- ajax call responded --");
       const oMessage = JSON.parse(oResponse.data);
       // Parse the returned JSON into an array of assignments
@@ -329,6 +330,7 @@ function onMenuOpenAssignments() {
   goCancelAjax = axios.CancelToken.source();
   axios.get(url, { cancelToken: goCancelAjax.token })
     .then((oResponse) => {
+      goCancelAjax = null;
       console.log("-- response successful --");
       // Parse the returned JSON into an array of assignments
       // The data from API was double JSON.stringified() since axios does one

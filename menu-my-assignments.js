@@ -166,6 +166,7 @@ function onMenuVolunteerAssignments() {
   goCancelAjax = axios.CancelToken.source();
   axios.get(url, { cancelToken: goCancelAjax.token })
     .then((oResponse) => {
+      goCancelAjax = null;
       console.log("-- ajax call responded --");
       // Parse the returned JSON into an array of assignments
       // The data from API was double JSON.stringified() since axios does one

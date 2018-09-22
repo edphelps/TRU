@@ -85,7 +85,10 @@ Lists annual totals and the docs volunteer has submitted in the last 90 days.
 
 # Axios details
 
-All calls to axios/ajax set a 
+All calls to axios/ajax that load page data are cancelled if a second request
+is made.  Example:  a user repeatedly clicks a menu choice to reload a page OR
+a user quickly moves to another page before the first page completed its AJAX
+call.
 
 
 # Data
