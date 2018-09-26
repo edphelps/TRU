@@ -178,10 +178,11 @@ fieldset {
 .card-header {
   /* the highlight color for opened cards */
   background-color: lightblue;
+  cursor: pointer;
 }
 .card-header:hover {
   background-color: lightblue;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 .collapsed {
   /* the standard color overriding .card-header */

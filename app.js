@@ -129,9 +129,9 @@ function loadPassword() {
       // round of JSON.parse() for us.  We want to JSON.parse() ourselves to be
       // able to apply the date reviver in other parts of the application.
       gPASSWORD = JSON.parse(oResponse.data);
-      console.log(`password loaded: ${gPASSWORD}`);
-      console.log(gPASSWORD);
-      console.log(oResponse.data);
+      // console.log(`password loaded: ${gPASSWORD}`);
+      // console.log(gPASSWORD);
+      // console.log(oResponse.data);
       onkeyupLogin(); // cause a re-evalidation of user login credentials
     }) // then
     .catch((error) => {
