@@ -254,9 +254,9 @@ function getOpenAssignments() {
     if (!dtLastViewed) {
       dtLastViewed = new Date(new Date() - MILLISEC_IN_A_DAY * 5);
     } else {
-      dtLastViewed = new Date(dtLastViewed); // convert string to
+      dtLastViewed = new Date(dtLastViewed); // convert string to Date
     }
-    dtLastViewed = new Date(dtLastViewed - MILLISEC_IN_A_DAY * 4); // todo: remove, for testing only
+    //dtLastViewed = new Date(dtLastViewed - MILLISEC_IN_A_DAY * 4); // todo: remove, for testing only
     console.log(`Last viewed: ${dtLastViewed}`);
     return dtLastViewed;
   }

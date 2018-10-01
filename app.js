@@ -93,7 +93,7 @@ function onkeyupLogin() {
   }
 
   // valid
-  if (sName.length && sPassword === gPASSWORD) {
+  if (sName.length && sPassword.toLowerCase() === gPASSWORD.toLowerCase()) {
     elemFieldsetLogin.classList.add("login--valid");
     elemFieldsetLogin.classList.remove("login--invalid");
     gUserValidated = true;

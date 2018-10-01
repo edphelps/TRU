@@ -68,11 +68,11 @@ function getVolunteerStatsDocs(aDocs) {
   const dt90DaysAgo = new Date(new Date() - 90 * MILLISEC_IN_A_DAY);
   const aDocs90Days = aDocs.filter(oDoc => dt90DaysAgo <= oDoc["Date of service"]);
 
-  // sort assignments from last 90 days by date of service
+  // sort assignments from last 90 days by reverse date of service (most recent first)
   aDocs90Days.sort((oDoc1, oDoc2) => {
-    if (oDoc1["Date of service"] < oDoc2["Date of service"])
-      return -1;
     if (oDoc2["Date of service"] < oDoc1["Date of service"])
+      return -1;
+    if (oDoc1["Date of service"] < oDoc2["Date of service"])
       return 1;
     return 0;
   });
