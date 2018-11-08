@@ -7,7 +7,7 @@ This site allows TRU Care volunteers to:
 * view available volunteer assignments
 * take a volunteer assignment
 * view the details (phone, address, etc) for their assignments
-* view a summary of their volunteer history (hours and miles by year)
+* view a summary of their volunteer history (hours / miles by year)
 * view the patient visit documentation they've submitted in the past 90 days  
 
 The site links to:
