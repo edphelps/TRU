@@ -1,4 +1,4 @@
-# TRU Care Volunteer Assigment Site
+# TRU Care Volunteer Assignment Site
 
 
 # Overview
