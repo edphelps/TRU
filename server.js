@@ -1,4 +1,8 @@
-GOOGLE SERVER CODE
+
+
+// GOOGLE SERVER CODE
+// Part of the project for verrsion control and backup
+// This code runs
 
 var SPREADSHEET_ID     = '1drQkdhUFhlLRakCkQVfnHXOZokdfdiuprv224ZbQpjI';
 
@@ -48,7 +52,7 @@ function getDurationHours(dtDuration) {
   return (dtDuration.getTime() / 1000 / 60 / 60) + 613649;
 }
 
-/*******************************************************
+/* ******************************************************
 * Get Volunteer Docs
 *
 * @param {string} sVolunteer - req'd: name of volunteer, ex: "Tom Genovese"
@@ -62,7 +66,7 @@ function getDurationHours(dtDuration) {
 *                               Mileage       : {float}
 *                            }
 *         }
-********************************************************/
+******************************************************* */
 function getVolunteerDocs(sVolunteer) {
   Logger.log("getVolunteerDocs() start");
 

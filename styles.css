@@ -14,9 +14,6 @@ body {
   /* background-blend-mode: screen; */
 
   background: url("./images/banner.png") no-repeat center;
-
-  /* background-image: url("./images/banner.jpg") */
-  /* background: url("./images/banner.jpg") no-repeat center; */
 }
 
 #logo {
@@ -43,21 +40,6 @@ body {
   0 0 80px #fff,
   0 0 100px #fff,
   0 0 150px #fff;
-
-  /* text-shadow: 0 0 10px #fff,
-  0 0 20px #fff,
-  0 0 30px #fff,
-  0 0 40px #ff00de,
-  0 0 70px #ff00de,
-  0 0 80px #ff00de,
-  0 0 100px #ff00de,
-  0 0 150px #ff00de; */
-
-  /* text-shadow:
-    -1px -1px 0 white,
-    1px -1px 0 white,
-    -1px 1px 0 white,
-    1px 1px 0 white; */
 }
 
 /* *****************************************
@@ -91,17 +73,12 @@ fieldset {
 
 .login--valid {
   background: rgb(81, 142, 48);
-  /* background: rgb(48, 101, 26); */
-  /* background: rgb(35, 80, 19); */
-  /* background: #138D75; */
-  /* border-color: darkgrey; */
   box-shadow: 0 0 10px 1px black;
 }
 
 .login--invalid {
   background: #CB4335;
   box-shadow: 0 0 10px 1px black;
-  /* box-shadow: 0 0 20px 3px black; */
 }
 
 
@@ -136,9 +113,6 @@ fieldset {
   background: #FDEBD0;
   padding: 15px;
   /* border: solid;   NOT WORKING, WON'T USE RADIUS ON THE BS CARDS  */
-  /* #DCEDC8; */
-  /* #FEF5E7; */
-  /* #FAD7A0; */
 }
 
 #accordion td, #accordion tr, #accordion th {
