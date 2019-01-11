@@ -40,6 +40,7 @@ function makeSpanningRow(sTd, iColsToSpan) {
 function getDurationHours(dtDuration) {
   return (dtDuration.getTime() / 1000 / 60 / 60) + 613649;
 }
+
 /* *******************************************************
 *  getDateOnly()
 *  Helper to get just the date for display

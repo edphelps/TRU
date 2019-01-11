@@ -2,9 +2,9 @@
 
    Globals
 
-   General Utils
-
    Menu Handlers -- contain AJAX calls
+
+   DOM and initial setup
 */
 
 /* *****************************************************************************

@@ -192,7 +192,7 @@ function onMenuVolunteerAssignments() {
       // Hide loading spinner
       document.querySelector("#content--volunteer-assignments .spinner").setAttribute("hidden", true);
 
-    }) // then
+    })
     .catch((error) => {
       // if not due to a call to goCancelAjax.cancel()
       if (error.toString()!=="Cancel") {
@@ -205,5 +205,5 @@ function onMenuVolunteerAssignments() {
         elemContainer.innerText = `An error occured: ${sErrorMsg}`;
         debugger;
       }
-    }); // catch
+    }); 
 }
