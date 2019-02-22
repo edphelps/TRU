@@ -17,9 +17,7 @@ The site links to:
 
 # Login process
 
-A single password is used for all users and is currently hard-coded into the
-app.  Application saves login information to local storage.  Menu is disabled
-and a dummy page is displayed until login is completed.
+Menu is disabled and a dummy page is displayed until login is completed.
 
 ### invalid login
 ![Example](screenshots/login-invalid.png)
@@ -45,16 +43,16 @@ assignment with names redacted (they appears as "#name#" in the text).
 
 At the bottom of the assignment details is a button to take the assignment.
 
-### "take it" button
+### "take it" button in lower-right
 ![Example](screenshots/take-it-btn.png)
 
 When a user clicks to take an assignment the button changes to a wait message
 while an AJAX call is made to try to take the assignment.  
 
-### wait button
+### wait button in lower-right
 ![Example](screenshots/take-it-wait-btn.png)
 
-If there is a problema modal is displayed and the button changes to
+If there is a problem a modal is displayed and the button changes to
 "Assignment Unavailable".
 
 ### failed to take assignment modal
@@ -62,7 +60,6 @@ If there is a problema modal is displayed and the button changes to
 
 ### failed to take assignment button
 ![ExampleÎ](screenshots/take-it-failed-btn.png)
-
 
 # My Assignments page
 
@@ -93,12 +90,12 @@ call.
 
 # Data
 
-Data is accessed via a Google Apps Script API that maintains a spreadsheet
+Data is accessed via a Google Apps Script Restful API that maintains a spreadsheet
 of assignments (open and assigned) and another spreadsheet with the 'docs'
 submitted by volunteers.
 
-The code for this is in server.js and designed to run as a Google Apps Scripts
-project on their servers.
+The code for this is in server.js and runs as a Google Apps Scripts
+project on Google's servers.
 
-Data is maintained and server.js is executed in the context of the e
-dphelps@trucare.org Google account.
+The data is maintained, and server.js is executed, in the context of the 
+edphelps@trucare.org Google account.
