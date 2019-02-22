@@ -1,5 +1,8 @@
 # TRU Care Volunteer Assignment Site
 
+Movie of the the site in action:
+
+![Example](screenshots/TRU-vol.mov)
 
 # Overview
 
@@ -19,7 +22,7 @@ The site links to:
 
 Menu is disabled and a dummy page is displayed until login is completed.
 
-### invalid login
+### incomplete login
 ![Example](screenshots/login-invalid.png)
 
 ### valid login
@@ -38,28 +41,29 @@ they were posted.  Badges highlight:
 Clicking an assignment will slide it open to reveal basic information on the
 assignment with names redacted (they appears as "#name#" in the text).
 
-### assignments page
+### open assignments page
 ![Example](screenshots/open-assignments.png)
+
+### "take it" button in lower-right
 
 At the bottom of the assignment details is a button to take the assignment.
 
-### "take it" button in lower-right
 ![Example](screenshots/take-it-btn.png)
+
+### wait button in lower-right
 
 When a user clicks to take an assignment the button changes to a wait message
 while an AJAX call is made to try to take the assignment.  
 
-### wait button in lower-right
 ![Example](screenshots/take-it-wait-btn.png)
 
-If there is a problem a modal is displayed and the button changes to
-"Assignment Unavailable".
+### assignment no longer available
 
-### failed to take assignment modal
+If the assignment was taken by another volunteer or removed by a volunteer coordinator
+a modal is displayed and the button in the lower right changes to "Assignment Unavailable".
+
 ![Example](screenshots/take-it-failed-modal.png)
 
-### failed to take assignment button
-![ExampleÎ](screenshots/take-it-failed-btn.png)
 
 # My Assignments page
 
@@ -71,6 +75,7 @@ assignment is shown (including names, phone numbers, etc).
 
 ### assignments page
 ![ExampleÎ](screenshots/my-assignments.png)
+
 
 # My Stats page
 
@@ -90,12 +95,12 @@ call.
 
 # Data
 
-Data is accessed via a Google Apps Script Restful API that maintains a spreadsheet
-of assignments (open and assigned) and another spreadsheet with the 'docs'
+Data is accessed via a Google Apps Script Restful API that maintains a table
+of assignments (open and assigned) and another table with the 'docs'
 submitted by volunteers.
 
 The code for this is in server.js and runs as a Google Apps Scripts
 project on Google's servers.
 
-The data is maintained, and server.js is executed, in the context of the 
+The data is maintained, and server.js is executed, in the context of the
 edphelps@trucare.org Google account.
