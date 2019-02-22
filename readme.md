@@ -1,8 +1,6 @@
 # TRU Care Volunteer Assignment Site
 
-Movie of the the site in action:
-
-![Example](screenshots/TRU-vol.mov)
+![Movie of the the site in action](https://youtu.be/Pxv0j7-7gxw)
 
 # Overview
 
