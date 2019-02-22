@@ -1,12 +1,12 @@
 # TRU Care Volunteer Assignment Site
 
-Vidio of the site in action:
-[Narrated](https://www.youtube.com/watch?v=ZC4nEUYeXLU)
-[Silent](https://youtu.be/Pxv0j7-7gxw)
+Video of the site in action:
+* [Narrated](https://www.youtube.com/watch?v=ZC4nEUYeXLU)
+* [Silent](https://youtu.be/Pxv0j7-7gxw)
 
 # Overview
 
-This site allows TRU Care volunteers to:
+This site allows TRU Care's 100+ volunteers to:
 * view available volunteer assignments
 * take a volunteer assignment
 * view the details (phone, address, etc) for their assignments
