@@ -1,6 +1,7 @@
 # TRU Care Volunteer Assignment Site
 
-Video of the site in action:
+# Videos of the site in action
+
 * [Narrated](https://www.youtube.com/watch?v=ZC4nEUYeXLU)
 * [Silent](https://youtu.be/Pxv0j7-7gxw)
 
